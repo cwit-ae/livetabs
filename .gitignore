@@ -1,0 +1,21 @@
+# dependencies
+node_modules
+
+# build output (rebuilt from source; never committed)
+dist
+*.tsbuildinfo
+
+# local linking artifacts — tarballs used to consume the package in sibling
+# repos before publishing. Not part of the repo.
+.tarballs/
+*.tgz
+
+# test / tooling
+coverage
+.turbo
+
+# logs + os + editor cruft
+*.log
+.DS_Store
+.vscode/
+.idea/

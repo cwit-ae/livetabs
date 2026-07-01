@@ -1,0 +1,49 @@
+{
+  "name": "livetabs",
+  "version": "0.1.0",
+  "description": "Browser-style workspace tabs with kept-alive pages for TanStack Router. Switch pages without losing scroll, form input, or query state.",
+  "keywords": ["tanstack-router", "react", "tabs", "keep-alive", "keepalive", "workspace", "cache", "router"],
+  "license": "MIT",
+  "author": "livetabs contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/livetabs/livetabs.git",
+    "directory": "packages/livetabs"
+  },
+  "homepage": "https://github.com/livetabs/livetabs#readme",
+  "bugs": "https://github.com/livetabs/livetabs/issues",
+  "type": "module",
+  "sideEffects": false,
+  "files": ["dist", "styles.css", "README.md", "LICENSE"],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./styles.css": "./styles.css"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "lint:pkg": "publint --strict"
+  },
+  "peerDependencies": {
+    "@tanstack/react-router": ">=1.150.0",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "zustand": ">=4"
+  }
+}

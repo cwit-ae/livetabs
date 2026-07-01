@@ -1,0 +1,36 @@
+name: Release
+
+# Opens/updates a "Version Packages" PR as changesets accumulate; when that PR
+# merges to main, publishes the bumped packages to npm.
+#
+# Requires repo secret NPM_TOKEN (an npm automation token with publish rights).
+
+on:
+  push:
+    branches: [main]
+
+concurrency: release-${{ github.ref }}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - run: npm run build
+      - uses: changesets/action@v1
+        with:
+          publish: npm run release
+          version: npm run version-packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

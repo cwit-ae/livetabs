@@ -1,0 +1,54 @@
+{
+  "name": "@livetabs/tanstack-router",
+  "version": "0.1.0",
+  "description": "TanStack Router adapter for livetabs: keep-alive engine + workspace tabs that preserve page state across switches.",
+  "keywords": ["tanstack-router", "react", "tabs", "keep-alive", "keepalive", "workspace"],
+  "license": "MIT",
+  "author": "livetabs contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/livetabs/livetabs.git",
+    "directory": "packages/tanstack-router"
+  },
+  "homepage": "https://github.com/livetabs/livetabs#readme",
+  "bugs": "https://github.com/livetabs/livetabs/issues",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "files": ["dist", "README.md", "LICENSE"],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "lint:pkg": "publint --strict"
+  },
+  "dependencies": {
+    "@livetabs/core": "0.1.0"
+  },
+  "peerDependencies": {
+    "@tanstack/react-router": ">=1.150.0",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "zustand": ">=4"
+  }
+}

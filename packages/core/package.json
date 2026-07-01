@@ -1,0 +1,50 @@
+{
+  "name": "@livetabs/core",
+  "version": "0.1.0",
+  "description": "Router-agnostic core for livetabs: workspace-tabs store, registry, headless tab primitives, and the RouterAdapter seam.",
+  "license": "MIT",
+  "author": "livetabs contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/livetabs/livetabs.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/livetabs/livetabs#readme",
+  "bugs": "https://github.com/livetabs/livetabs/issues",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "files": ["dist", "styles.css", "README.md", "LICENSE"],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./styles.css": "./styles.css"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "lint:pkg": "publint --strict"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "zustand": ">=4"
+  }
+}
