@@ -1,5 +1,5 @@
-// @livetabs/core — router-agnostic workspace tabs. Pair with a router
-// adapter package (e.g. @livetabs/tanstack-router) for navigation + keep-alive.
+// @live-tabs/core — router-agnostic workspace tabs. Pair with a router
+// adapter package (e.g. @live-tabs/tanstack-router) for navigation + keep-alive.
 
 export { createWorkspaceTabsStore } from "./store"
 export type {

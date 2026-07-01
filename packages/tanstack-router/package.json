@@ -1,17 +1,17 @@
 {
-  "name": "@livetabs/tanstack-router",
+  "name": "@live-tabs/tanstack-router",
   "version": "0.1.0",
-  "description": "TanStack Router adapter for livetabs: keep-alive engine + workspace tabs that preserve page state across switches.",
+  "description": "TanStack Router adapter for live-tabs: keep-alive engine + workspace tabs that preserve page state across switches.",
   "keywords": ["tanstack-router", "react", "tabs", "keep-alive", "keepalive", "workspace"],
   "license": "MIT",
-  "author": "livetabs contributors",
+  "author": "live-tabs contributors",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/livetabs/livetabs.git",
+    "url": "git+https://github.com/live-tabs/live-tabs.git",
     "directory": "packages/tanstack-router"
   },
-  "homepage": "https://github.com/livetabs/livetabs#readme",
-  "bugs": "https://github.com/livetabs/livetabs/issues",
+  "homepage": "https://github.com/live-tabs/live-tabs#readme",
+  "bugs": "https://github.com/live-tabs/live-tabs/issues",
   "publishConfig": {
     "access": "public"
   },
@@ -43,7 +43,7 @@
     "lint:pkg": "publint --strict"
   },
   "dependencies": {
-    "@livetabs/core": "0.1.0"
+    "@live-tabs/core": "0.1.0"
   },
   "peerDependencies": {
     "@tanstack/react-router": ">=1.150.0",

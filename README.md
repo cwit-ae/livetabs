@@ -1,4 +1,4 @@
-# livetabs
+# live-tabs
 
 **Browser-style workspace tabs with kept-alive pages.** Open pages in tabs and
 switch between them without losing scroll, form input, filters, or in-flight
@@ -7,20 +7,20 @@ queries — each page's React subtree stays mounted off-screen.
 This is the monorepo. Most users just want the published package:
 
 ```
-npm i livetabs        # core + TanStack Router adapter, batteries included
+npm i live-tabs        # core + TanStack Router adapter, batteries included
 ```
 
-See **[packages/livetabs/README.md](./packages/livetabs/README.md)** for usage.
+See **[packages/live-tabs/README.md](./packages/live-tabs/README.md)** for usage.
 
 ## Packages
 
 | Package | Status | What |
 | --- | --- | --- |
-| [`@livetabs/core`](./packages/core) | ✅ | Router-agnostic: store, registry, headless tab primitives, the `RouterAdapter` seam. No router dep. |
-| [`@livetabs/tanstack-router`](./packages/tanstack-router) | ✅ | TanStack Router adapter + the keep-alive engine. |
-| [`livetabs`](./packages/livetabs) | ✅ | Umbrella — `npm i livetabs` = core + TanStack adapter. |
-| [`@livetabs/react-router`](./packages/react-router) | 🚧 planned | React Router adapter + keep-alive. |
-| [`@livetabs/next`](./packages/next) | 🚧 planned | Next.js: tabs everywhere; keep-alive on Pages Router. |
+| [`@live-tabs/core`](./packages/core) | ✅ | Router-agnostic: store, registry, headless tab primitives, the `RouterAdapter` seam. No router dep. |
+| [`@live-tabs/tanstack-router`](./packages/tanstack-router) | ✅ | TanStack Router adapter + the keep-alive engine. |
+| [`live-tabs`](./packages/live-tabs) | ✅ | Umbrella — `npm i live-tabs` = core + TanStack adapter. |
+| [`@live-tabs/react-router`](./packages/react-router) | 🚧 planned | React Router adapter + keep-alive. |
+| [`@live-tabs/next`](./packages/next) | 🚧 planned | Next.js: tabs everywhere; keep-alive on Pages Router. |
 
 ## Architecture
 
@@ -29,19 +29,19 @@ small `RouterAdapter` (`useLocation` / `useNavigate` / `Link` /
 `useKeptPathname` / optional `useDestroyPage`). Adapter packages implement it
 and ship the matching keep-alive engine; the store, registry, primitives, and
 `<WorkspaceTabBar>` are reused unchanged. Adding a router = one new package, no
-changes to `@livetabs/core`.
+changes to `@live-tabs/core`.
 
 ```
-@livetabs/core  ◄── @livetabs/tanstack-router ◄── livetabs (umbrella)
-                ◄── @livetabs/react-router      (planned)
-                ◄── @livetabs/next              (planned)
+@live-tabs/core  ◄── @live-tabs/tanstack-router ◄── live-tabs (umbrella)
+                ◄── @live-tabs/react-router      (planned)
+                ◄── @live-tabs/next              (planned)
 ```
 
 ## Develop
 
 ```
 npm install          # installs all workspaces
-npm run build        # builds core → tanstack-router → livetabs (in order)
+npm run build        # builds core → tanstack-router → live-tabs (in order)
 npm run typecheck    # tsc across all packages
 npm test             # run the test suite (Vitest)
 npm run lint:pkg     # validate package publish-health (publint)

@@ -28,7 +28,7 @@ export function TabClose({
       tabIndex={-1}
       aria-label={label}
       {...rest}
-      className={cx("livetabs-tab-close", className)}
+      className={cx("live-tabs-tab-close", className)}
       onMouseDown={chain(rest.onMouseDown, (e: MouseEvent<HTMLButtonElement>) =>
         e.stopPropagation(),
       )}

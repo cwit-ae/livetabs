@@ -1,7 +1,7 @@
 # Publishing
 
-How releases work for the livetabs packages (`@livetabs/core`,
-`@livetabs/tanstack-router`, `livetabs`).
+How releases work for the live-tabs packages (`@live-tabs/core`,
+`@live-tabs/tanstack-router`, `live-tabs`).
 
 **We use [Changesets](https://github.com/changesets/changesets), not
 `npm version`.** Don't run `npm version patch/minor/major` by hand — it would
@@ -41,9 +41,9 @@ once, while logged in:
 ```bash
 npm login                 # your npm account with publish rights
 npm run build
-npm publish -w @livetabs/core --access public
-npm publish -w @livetabs/tanstack-router --access public
-npm publish -w livetabs --access public
+npm publish -w @live-tabs/core --access public
+npm publish -w @live-tabs/tanstack-router --access public
+npm publish -w live-tabs --access public
 ```
 
 (The scoped packages set `publishConfig.access: public`, so `--access public`

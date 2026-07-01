@@ -1,17 +1,17 @@
 {
-  "name": "livetabs",
+  "name": "live-tabs",
   "version": "0.1.0",
   "description": "Browser-style workspace tabs with kept-alive pages for TanStack Router. Switch pages without losing scroll, form input, or query state.",
   "keywords": ["tanstack-router", "react", "tabs", "keep-alive", "keepalive", "workspace", "cache", "router"],
   "license": "MIT",
-  "author": "livetabs contributors",
+  "author": "live-tabs contributors",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/livetabs/livetabs.git",
-    "directory": "packages/livetabs"
+    "url": "git+https://github.com/live-tabs/live-tabs.git",
+    "directory": "packages/live-tabs"
   },
-  "homepage": "https://github.com/livetabs/livetabs#readme",
-  "bugs": "https://github.com/livetabs/livetabs/issues",
+  "homepage": "https://github.com/live-tabs/live-tabs#readme",
+  "bugs": "https://github.com/live-tabs/live-tabs/issues",
   "type": "module",
   "sideEffects": false,
   "files": ["dist", "styles.css", "README.md", "LICENSE"],

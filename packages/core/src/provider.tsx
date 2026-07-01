@@ -57,7 +57,7 @@ export function useWorkspaceContext(): WorkspaceContextValue {
   const v = useContext(WorkspaceContext)
   if (!v) {
     throw new Error(
-      "livetabs: useWorkspace*/useSetTabTitle must be used within <WorkspaceProvider>",
+      "live-tabs: useWorkspace*/useSetTabTitle must be used within <WorkspaceProvider>",
     )
   }
   return v

@@ -5,7 +5,7 @@ import {
   useRouterState,
 } from "@tanstack/react-router"
 
-import type { RouterAdapter, RouterLinkProps } from "@livetabs/core"
+import type { RouterAdapter, RouterLinkProps } from "@live-tabs/core"
 
 import { useKeptPathname } from "./keepalive/frozen-location"
 import { useKeepAlive } from "./keepalive/hooks"

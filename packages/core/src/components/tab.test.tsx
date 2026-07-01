@@ -31,7 +31,7 @@ describe("Tab", () => {
     const el = screen.getByRole("tab")
     expect(el.className).toContain("mine")
     expect(el.className).toContain("theirs")
-    expect(el.className).toContain("livetabs-tab")
+    expect(el.className).toContain("live-tabs-tab")
   })
 
   it("fires onMiddleClick on a middle auxclick", () => {

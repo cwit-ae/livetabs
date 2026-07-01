@@ -110,7 +110,7 @@ export function TabStrip({
     <div
       ref={scrollRef}
       role="tablist"
-      className={cx("livetabs-strip", className)}
+      className={cx("live-tabs-strip", className)}
       style={mergedStyle}
       {...rest}
     >

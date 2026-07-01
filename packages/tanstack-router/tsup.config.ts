@@ -12,6 +12,6 @@ export default defineConfig({
     "react-dom",
     "zustand",
     "@tanstack/react-router",
-    "@livetabs/core",
+    "@live-tabs/core",
   ],
 })

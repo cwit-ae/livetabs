@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 
-import { WorkspaceProvider as CoreWorkspaceProvider } from "@livetabs/core"
-import type { WorkspaceTabsOptions, TabRegistry } from "@livetabs/core"
+import { WorkspaceProvider as CoreWorkspaceProvider } from "@live-tabs/core"
+import type { WorkspaceTabsOptions, TabRegistry } from "@live-tabs/core"
 
 import { KeepAliveProvider } from "./keepalive/keep-alive-context"
 import { tanstackRouterAdapter } from "./adapter"

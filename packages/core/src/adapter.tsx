@@ -10,8 +10,8 @@ export type RouterLinkProps = {
 } & Record<string, unknown>
 
 /**
- * The seam between livetabs and a router. A router-specific package (e.g.
- * `@livetabs/tanstack-router`) implements this; the core is otherwise
+ * The seam between live-tabs and a router. A router-specific package (e.g.
+ * `@live-tabs/tanstack-router`) implements this; the core is otherwise
  * router-agnostic.
  *
  * Every member is a hook or a component, so implementations may call router
@@ -45,8 +45,8 @@ export function useAdapter(): RouterAdapter {
   const adapter = useContext(RouterAdapterContext)
   if (!adapter) {
     throw new Error(
-      "livetabs: no RouterAdapter in context. Use a router-specific provider " +
-        "(e.g. WorkspaceProvider from @livetabs/tanstack-router), or pass " +
+      "live-tabs: no RouterAdapter in context. Use a router-specific provider " +
+        "(e.g. WorkspaceProvider from @live-tabs/tanstack-router), or pass " +
         "`adapter` to the core WorkspaceProvider.",
     )
   }

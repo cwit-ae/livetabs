@@ -51,7 +51,7 @@ export function Tab({
       ...base,
       ...rest,
       ...cp,
-      className: cx("livetabs-tab", className, cp.className as string),
+      className: cx("live-tabs-tab", className, cp.className as string),
       onClick: chain(
         rest.onClick as ((e: MouseEvent) => void) | undefined,
         cp.onClick as ((e: MouseEvent) => void) | undefined,
@@ -69,7 +69,7 @@ export function Tab({
       type="button"
       {...base}
       {...rest}
-      className={cx("livetabs-tab", className)}
+      className={cx("live-tabs-tab", className)}
       onAuxClick={chain(
         rest.onAuxClick as ((e: MouseEvent) => void) | undefined,
         handleAux,

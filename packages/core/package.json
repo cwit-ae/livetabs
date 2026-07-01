@@ -1,16 +1,16 @@
 {
-  "name": "@livetabs/core",
+  "name": "@live-tabs/core",
   "version": "0.1.0",
-  "description": "Router-agnostic core for livetabs: workspace-tabs store, registry, headless tab primitives, and the RouterAdapter seam.",
+  "description": "Router-agnostic core for live-tabs: workspace-tabs store, registry, headless tab primitives, and the RouterAdapter seam.",
   "license": "MIT",
-  "author": "livetabs contributors",
+  "author": "live-tabs contributors",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/livetabs/livetabs.git",
+    "url": "git+https://github.com/live-tabs/live-tabs.git",
     "directory": "packages/core"
   },
-  "homepage": "https://github.com/livetabs/livetabs#readme",
-  "bugs": "https://github.com/livetabs/livetabs/issues",
+  "homepage": "https://github.com/live-tabs/live-tabs#readme",
+  "bugs": "https://github.com/live-tabs/live-tabs/issues",
   "publishConfig": {
     "access": "public"
   },

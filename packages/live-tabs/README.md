@@ -1,4 +1,4 @@
-# livetabs
+# live-tabs
 
 **Browser-style workspace tabs with kept-alive pages, for [TanStack Router](https://tanstack.com/router).**
 
@@ -8,7 +8,7 @@ survive because each page's React subtree stays mounted off-screen. Built for
 admin consoles and dashboards where users hop between records all day.
 
 ```
-npm i livetabs
+npm i live-tabs
 ```
 
 > Peer deps: `react`, `react-dom`, `@tanstack/react-router` (>=1.150), `zustand`.
@@ -20,7 +20,7 @@ npm i livetabs
 
 A normal router unmounts the old page on every navigation. Go from a customer
 you were editing to another tab and back, and your form is blank, your scroll
-is at the top, your filters are reset. `livetabs` keeps each page **alive** —
+is at the top, your filters are reset. `live-tabs` keeps each page **alive** —
 the way native app tabs work — and gives you the tab strip to drive it.
 
 - **Kept-alive pages** — `useState`, refs, scroll, and TanStack Query
@@ -39,7 +39,7 @@ the way native app tabs work — and gives you the tab strip to drive it.
 ### 1. Wrap your app
 
 ```tsx
-import { WorkspaceProvider, createTabRegistry } from "livetabs"
+import { WorkspaceProvider, createTabRegistry } from "live-tabs"
 
 const registry = createTabRegistry({
   staticRoutes: {
@@ -66,7 +66,7 @@ const registry = createTabRegistry({
 
 ```tsx
 // routes/dashboard/route.tsx
-import { KeepAliveOutlet } from "livetabs"
+import { KeepAliveOutlet } from "live-tabs"
 
 function DashboardLayout() {
   return (
@@ -87,14 +87,14 @@ export const Route = createFileRoute("/dashboard/customers/$id")({
 })
 ```
 
-`livetabs` augments TanStack's `StaticDataRouteOption` type, so `keepAlive` is
+`live-tabs` augments TanStack's `StaticDataRouteOption` type, so `keepAlive` is
 fully typed. (Set it on leaf pages, not on layout `route.tsx` segments.)
 
 ### 4. Render the tab bar
 
 ```tsx
-import { WorkspaceTabBar } from "livetabs"
-import "livetabs/styles.css" // optional default theme
+import { WorkspaceTabBar } from "live-tabs"
+import "live-tabs/styles.css" // optional default theme
 import { IconHome, IconUser } from "@tabler/icons-react"
 
 const ICONS: Record<string, React.ReactNode> = {
@@ -112,7 +112,7 @@ const ICONS: Record<string, React.ReactNode> = {
 ### 5. Give detail pages a real title
 
 ```tsx
-import { useSetTabTitle } from "livetabs"
+import { useSetTabTitle } from "live-tabs"
 
 function CustomerDetail() {
   const { data } = useQuery(customerQuery)
@@ -128,10 +128,10 @@ That's it. Pages now persist across tab switches, and the bar manages itself.
 ## Headless usage
 
 Want your own bar, or just the tab UI without the router glue? Use
-`@livetabs/core` directly (router-agnostic — no TanStack/keep-alive code):
+`@live-tabs/core` directly (router-agnostic — no TanStack/keep-alive code):
 
 ```tsx
-import { createWorkspaceTabsStore, TabStrip, Tab, TabClose } from "@livetabs/core"
+import { createWorkspaceTabsStore, TabStrip, Tab, TabClose } from "@live-tabs/core"
 
 const useTabs = createWorkspaceTabsStore({ pinnedPath: "/", maxTabs: 10 })
 
@@ -201,7 +201,7 @@ visible, `none` when hidden) — the **only** approach that reliably preserves
 state in stable React 19. Hidden subtrees stay mounted but don't display.
 
 Trade-off: a hidden subtree's *router* hooks (`useParams`, `useLocation`) see
-the live URL when it re-renders. `livetabs` wraps each kept subtree in a frozen
+the live URL when it re-renders. `live-tabs` wraps each kept subtree in a frozen
 location so its own state isn't disturbed; use `useKeptPathname()` (not
 `useLocation`) when a kept page needs "which page am I?". `useQuery` dedupes,
 so query-driven UI is unaffected.

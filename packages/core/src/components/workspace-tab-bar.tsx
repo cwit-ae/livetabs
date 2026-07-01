@@ -85,7 +85,7 @@ export function WorkspaceTabBar({
   }
 
   return (
-    <div className={cx("livetabs-bar", className, classNames?.root)}>
+    <div className={cx("live-tabs-bar", className, classNames?.root)}>
       {leftSlot}
       <TabStrip activeKey={pathname} className={classNames?.strip}>
         {tabs.map((tab) => {
@@ -103,13 +103,13 @@ export function WorkspaceTabBar({
             >
               {renderIcon && (
                 <span
-                  className={cx("livetabs-tab-icon", classNames?.icon)}
+                  className={cx("live-tabs-tab-icon", classNames?.icon)}
                   aria-hidden
                 >
                   {renderIcon(tab.iconKey, tab)}
                 </span>
               )}
-              <span className={cx("livetabs-tab-title", classNames?.title)}>
+              <span className={cx("live-tabs-tab-title", classNames?.title)}>
                 {tab.title}
               </span>
               {!tab.pinned && (

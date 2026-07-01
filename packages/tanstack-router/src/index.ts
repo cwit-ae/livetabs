@@ -1,9 +1,9 @@
-// @livetabs/tanstack-router — everything from @livetabs/core, plus the
+// @live-tabs/tanstack-router — everything from @live-tabs/core, plus the
 // TanStack Router adapter, the keep-alive engine, and a pre-wired provider.
 
 // Re-export the router-agnostic core. The named exports below intentionally
 // shadow core's `WorkspaceProvider` with the TanStack-bound one.
-export * from "@livetabs/core"
+export * from "@live-tabs/core"
 
 // Keep-alive engine (also installs the `staticData.keepAlive` type augmentation).
 export * from "./keepalive"

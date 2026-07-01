@@ -8,7 +8,7 @@ Add a changeset when you make a user-facing change:
 npm run changeset
 ```
 
-All `@livetabs/*` packages and `livetabs` are **fixed** to one version (see
+All `@live-tabs/*` packages and `live-tabs` are **fixed** to one version (see
 `config.json`), so an adapter never drifts from the core it targets. Release:
 
 ```
