@@ -1,7 +1,7 @@
 {
-  "name": "livetabs-monorepo",
+  "name": "livetabs",
   "version": "0.1.0",
-  "description": "Monorepo for livetabs — workspace tabs with kept-alive pages.",
+  "description": "Browser-style workspace tabs with kept-alive pages for TanStack Router. Switch pages without losing scroll, form input, or query state.",
   "workspaces": [
     "packages/core",
     "packages/tanstack-router",

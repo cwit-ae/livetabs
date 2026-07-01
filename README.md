@@ -43,10 +43,16 @@ changes to `@livetabs/core`.
 npm install          # installs all workspaces
 npm run build        # builds core → tanstack-router → livetabs (in order)
 npm run typecheck    # tsc across all packages
+npm test             # run the test suite (Vitest)
+npm run lint:pkg     # validate package publish-health (publint)
 ```
 
 Versioning is via [changesets](./.changeset); all packages are **fixed** to one
 version so adapters never drift from the core they target.
+
+**Releasing?** See **[PUBLISHING.md](./PUBLISHING.md)** — first-time setup,
+adding changesets (patch/minor/major), and the automated release flow via npm
+Trusted Publishing.
 
 ## Credits
 

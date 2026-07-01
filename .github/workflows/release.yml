@@ -3,7 +3,12 @@ name: Release
 # Opens/updates a "Version Packages" PR as changesets accumulate; when that PR
 # merges to main, publishes the bumped packages to npm.
 #
-# Requires repo secret NPM_TOKEN (an npm automation token with publish rights).
+# Publishing uses npm Trusted Publishing (OIDC) — no NPM_TOKEN secret needed.
+# Prereqs:
+#   1. `id-token: write` permission below (lets GitHub mint the OIDC token).
+#   2. npm >= 11.5.1 on the runner (installed explicitly; Node 20 ships older).
+#   3. Each package configured as a Trusted Publisher on npmjs.com, pointing at
+#      this repo + workflow (`release.yml`). Provenance is attached automatically.
 
 on:
   push:
@@ -14,6 +19,7 @@ concurrency: release-${{ github.ref }}
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 jobs:
   release:
@@ -25,6 +31,9 @@ jobs:
           node-version: 20
           cache: npm
           registry-url: https://registry.npmjs.org
+      # Trusted publishing (OIDC) requires npm >= 11.5.1; Node 20 bundles npm 10.
+      - name: Upgrade npm for OIDC publishing
+        run: npm install -g npm@latest
       - run: npm ci
       - run: npm run build
       - uses: changesets/action@v1
@@ -32,5 +41,5 @@ jobs:
           publish: npm run release
           version: npm run version-packages
         env:
+          # Only GitHub auth — npm publish authenticates via OIDC, no NPM_TOKEN.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
