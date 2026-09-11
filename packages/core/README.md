@@ -34,7 +34,7 @@ renderer and no navigation:
 | Your router | Install |
 | --- | --- |
 | Next.js App Router | [`@live-tabs/next`](https://github.com/cwit-ae/livetabs/tree/main/packages/next) |
-| TanStack Router | [`live-tabs`](https://github.com/cwit-ae/livetabs/tree/main/packages/live-tabs), or [`@live-tabs/tanstack-router`](https://www.npmjs.com/package/@live-tabs/tanstack-router) |
+| TanStack Router | [`@live-tabs/tanstack-router`](https://www.npmjs.com/package/@live-tabs/tanstack-router) |
 
 Each re-exports everything here, so you never install both. Reach for
 `@live-tabs/core` directly only when building a new router adapter, or when you

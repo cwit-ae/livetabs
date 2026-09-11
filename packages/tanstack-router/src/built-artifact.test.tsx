@@ -10,11 +10,15 @@ import {
   createRouter,
 } from "@tanstack/react-router"
 
-// Deliberately the BUILT umbrella, not the source. This package inlines
-// @live-tabs/core and @live-tabs/tanstack-router (`noExternal`) to ship a
-// self-contained artifact, and the keep-alive event bus is a module-level
-// singleton — so bundling is exactly where a duplicated-module bug would show
-// up. Source-level tests cannot catch that; this one can.
+// Deliberately the BUILT package, not the source — this file imports through
+// the same `exports` map a consumer would.
+//
+// It guards the seam that source tests cannot see: `@live-tabs/core` is
+// *external* here, so the keep-alive event bus lives in core's module and has
+// to be the very same instance on both sides of the package boundary.
+// `<OffScreen>` (core) emits; `useActiveEffect` (this package) listens. If the
+// build ever inlined core, or resolved it twice, there would be two emitters
+// and background tabs would silently stop reacting.
 import {
   WorkspaceProvider,
   KeepAliveOutlet,
@@ -23,7 +27,7 @@ import {
   useActiveEffect,
   useFrozenLocation,
   useWorkspaceGroups,
-} from "live-tabs"
+} from "@live-tabs/tanstack-router"
 
 const activeLog: string[] = []
 
@@ -109,7 +113,7 @@ beforeEach(() => {
   activeLog.length = 0
 })
 
-describe("live-tabs (built umbrella artifact)", () => {
+describe("@live-tabs/tanstack-router (built artifact)", () => {
   it("keeps pages alive with their state", async () => {
     const router = makeRouter()
     render(<RouterProvider router={router} />)
@@ -127,14 +131,14 @@ describe("live-tabs (built umbrella artifact)", () => {
     expect(screen.getByTestId("lead-input-1")).toHaveValue("half-typed note")
   })
 
-  it("delivers keep-alive events across the bundle boundary", async () => {
+  it("delivers keep-alive events across the package boundary", async () => {
     const router = makeRouter()
     render(<RouterProvider router={router} />)
     await screen.findByTestId("home")
 
     await goto(router, "/leads/1")
-    // `<OffScreen>` emits and `useActiveEffect` listens. If bundling produced
-    // two copies of the emitter module, this log would stay empty.
+    // `<OffScreen>` lives in core, `useActiveEffect` here. If the two resolved
+    // different copies of the emitter module, this log would stay empty.
     expect(activeLog).toContain("show:1")
 
     activeLog.length = 0
@@ -144,7 +148,7 @@ describe("live-tabs (built umbrella artifact)", () => {
     expect(activeLog).not.toContain("show:1")
   })
 
-  it("ships the new group API in the bundle", async () => {
+  it("ships the group API in the built package", async () => {
     const router = makeRouter()
     render(<RouterProvider router={router} />)
     await screen.findByTestId("home")

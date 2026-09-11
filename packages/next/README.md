@@ -26,7 +26,7 @@ npm i @live-tabs/next zustand
 > The only runtime dependency is `@live-tabs/core`, installed for you.
 
 Using TanStack Router instead? Install
-[`live-tabs`](https://github.com/cwit-ae/livetabs/tree/main/packages/live-tabs).
+[`@live-tabs/tanstack-router`](https://www.npmjs.com/package/@live-tabs/tanstack-router).
 
 ## Client-only by design
 

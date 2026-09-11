@@ -26,11 +26,6 @@ npm i @live-tabs/tanstack-router @tanstack/react-router zustand
 > Peers: `@tanstack/react-router` (>=1.150), `react` (>=18), `react-dom`,
 > `zustand` (>=4).
 
-Prefer a single install? [`live-tabs`](https://github.com/cwit-ae/livetabs/tree/main/packages/live-tabs)
-is the same thing under a shorter name. Use **this** package instead of the
-umbrella if you also import `@live-tabs/core` directly — the umbrella inlines
-core, and two copies of the keep-alive event bus stop `useActiveEffect` from
-firing.
 
 ## Run it
 
