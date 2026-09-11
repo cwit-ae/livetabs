@@ -10,6 +10,8 @@ This package has **no router dependency**. It provides:
 - `createTabRegistry` — a path → `{ title, iconKey }` resolver.
 - `attachPersistence` — opt-in restore of the tab strip across reloads.
 - `buildStrip` / `useWorkspaceStrip` — the strip as loose tabs and group runs.
+- `moveTab` — drag-to-reorder, with `arrayMove` index semantics.
+- `<WorkspaceTabBar tabWidth="equal" />` — browser-style equal tab widths.
 - `OffScreen`, `CachedRoute`, `createActiveHooks` — the router-agnostic half of
   the keep-alive engine, which adapters build on.
 - `useIdleEviction` — release kept subtrees that have been hidden too long, to

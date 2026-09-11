@@ -1,5 +1,44 @@
 # @live-tabs/core
 
+## 0.2.2
+
+### Added
+
+**`moveTab(pathname, toIndex, options?)`** — reorder the tab strip. Surfaced on
+the store and through `useWorkspaceTabs()`.
+
+Indices use the same semantics as `arrayMove`: remove, then insert at
+`toIndex` in the resulting array, so a drag library's `from`/`to` pair maps
+straight through. They address the full `tabs` array, not a filtered view, so a
+bar that hides collapsed group members must map its own index back first.
+
+Drag-and-drop crosses group boundaries, so `options.groupId` says where the tab
+landed — a group's id to join it, `null` to drop it loose. Omit the option and
+the tab keeps the group it had.
+
+Two invariants hold regardless:
+
+- Pinned tabs never move, and nothing moves ahead of one. An index that would
+  land before a pinned tab is clamped past it rather than rejected, so a drag
+  layer needn't special-case them.
+- Each group's tabs stay contiguous. A move that would split a run pulls the
+  run back together, and dragging the last member out releases the group.
+
+Reordering is a strip operation only: it never navigates and never disturbs a
+kept-alive subtree, so dragging a tab cannot lose what is typed in it.
+
+**Equal tab widths.** `<WorkspaceTabBar tabWidth="equal" />` sizes every tab
+the same and shrinks them together as more open, down to a new
+`--live-tabs-tab-min` (default `5.5rem`), after which the strip scrolls. The
+default stays `"auto"` — content-sized, exactly as before — so no existing bar
+reflows on upgrade.
+
+Pinned tabs keep their natural width and the rest divide what's left. A group
+claims one flex share per member, via a `--live-tabs-group-members` custom
+property the bar now sets, so grouped tabs line up with loose ones rather than
+sharing a single slot. Implemented as `data-tab-width` on the bar, so custom
+stylesheets can key off it.
+
 ## 0.2.1
 
 ### Patch Changes

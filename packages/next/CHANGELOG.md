@@ -1,5 +1,16 @@
 # @live-tabs/next
 
+## 0.2.2
+
+### Added
+
+- `moveTab` is re-exported from `@live-tabs/core`, giving the App Router
+  adapter drag-to-reorder without an app-side order array shadowing the store.
+  Reordering does not navigate and does not remount a kept page.
+
+- `<WorkspaceTabBar tabWidth="equal" />` for browser-style equal tab
+  widths. Default is unchanged.
+
 ## 0.2.1
 
 ### Patch Changes

@@ -93,6 +93,29 @@ export type WorkspaceTabsState = {
   /** Make a tab loose again. */
   removeTabFromGroup: (pathname: string) => void
 
+  /**
+   * Reorder the strip: move `pathname` to `toIndex`, using the same semantics
+   * as `arrayMove` — remove, then insert at `toIndex` in the resulting array.
+   * Indices address the full `tabs` array, not a filtered view of it, so a bar
+   * that hides collapsed group members must map its own index back first.
+   *
+   * Drag-and-drop crosses group boundaries, so pass `groupId` to say where the
+   * tab landed: a group's id to join it, `null` to drop it loose. Omit the
+   * option and the tab keeps whatever group it already had — in which case
+   * landing inside another group's run is undone by the contiguity rule below.
+   *
+   * Two invariants hold whatever you pass:
+   *   - Pinned tabs don't move, and nothing moves ahead of one. The index is
+   *     clamped past the last pinned tab rather than rejected.
+   *   - Each group's tabs stay contiguous, so a move that would split a run
+   *     pulls the run back together.
+   */
+  moveTab: (
+    pathname: string,
+    toIndex: number,
+    options?: { groupId?: string | null },
+  ) => void
+
   /** Replace tabs/groups from a persisted snapshot. */
   hydrate: (snapshot: WorkspaceSnapshot) => void
 }
@@ -366,6 +389,52 @@ export function createWorkspaceTabsStore(options: WorkspaceTabsOptions = {}) {
         )
         return {
           tabs: normalizeTabs(next),
+          groups: pruneEmptiedGroups(state.groups, state.tabs, next),
+        }
+      })
+    },
+
+    moveTab: (pathname, toIndex, moveOptions) => {
+      set((state) => {
+        const from = state.tabs.findIndex((t) => t.pathname === pathname)
+        if (from === -1) return state
+
+        const tab = state.tabs[from]!
+        // Pinned tabs anchor the strip; dragging one is a no-op rather than an
+        // error, so a drag layer doesn't have to special-case them.
+        if (tab.pinned) return state
+
+        const without = [
+          ...state.tabs.slice(0, from),
+          ...state.tabs.slice(from + 1),
+        ]
+
+        // Clamp past the last pinned tab instead of assuming they sit at index
+        // 0: `normalizeTabs` deliberately doesn't hoist pinned tabs, so their
+        // position is whatever the app made it.
+        let lastPinned = -1
+        without.forEach((t, i) => {
+          if (t.pinned) lastPinned = i
+        })
+        const target = Math.min(
+          Math.max(toIndex, lastPinned + 1),
+          without.length,
+        )
+
+        const reassign = moveOptions && "groupId" in moveOptions
+        const moved = reassign
+          ? { ...tab, groupId: moveOptions.groupId ?? null }
+          : tab
+
+        const next = [
+          ...without.slice(0, target),
+          moved,
+          ...without.slice(target),
+        ]
+
+        return {
+          tabs: normalizeTabs(next),
+          // Dragging the last member out of a group empties it.
           groups: pruneEmptiedGroups(state.groups, state.tabs, next),
         }
       })
