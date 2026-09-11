@@ -1,9 +1,10 @@
-import type { ReactNode } from "react"
+import type { CSSProperties, ReactNode } from "react"
 
-import { useWorkspaceTabs } from "../provider"
+import { useWorkspaceGroups, useWorkspaceStrip, useWorkspaceTabs } from "../provider"
 import { useAdapter, useNoopDestroyPage } from "../adapter"
 import { useAutoOpenTab } from "../hooks/use-auto-open-tab"
 import type { WorkspaceTab } from "../store"
+import type { TabGroup } from "../groups"
 import { TabStrip } from "./tab-strip"
 import { Tab } from "./tab"
 import { TabClose } from "./tab-close"
@@ -18,6 +19,26 @@ export type WorkspaceTabBarClassNames = {
   icon?: string
   title?: string
   close?: string
+  /** Wrapper around a group chip and its tabs. */
+  group?: string
+  /** The clickable group header. */
+  groupChip?: string
+  groupTitle?: string
+  /** Member count, shown while the group is collapsed. */
+  groupCount?: string
+  groupDelete?: string
+}
+
+/** What `renderGroup` gets to build a custom group header with. */
+export type GroupRenderContext = {
+  tabs: WorkspaceTab[]
+  collapsed: boolean
+  /** Collapse/expand, navigating away first if the group holds the active tab. */
+  toggle: () => void
+  /** Dissolve the group. Its tabs survive and become loose. */
+  remove: () => void
+  /** Dissolve the group and close every tab in it. */
+  removeWithTabs: () => void
 }
 
 export type WorkspaceTabBarProps = {
@@ -25,6 +46,8 @@ export type WorkspaceTabBarProps = {
   renderIcon?: (iconKey: string | undefined, tab: WorkspaceTab) => ReactNode
   /** Custom close glyph. Defaults to a small ✕. */
   renderClose?: () => ReactNode
+  /** Replace the default group header entirely. */
+  renderGroup?: (group: TabGroup, context: GroupRenderContext) => ReactNode
   /** Content rendered left of the strip (sidebar toggle, divider…). */
   leftSlot?: ReactNode
   /** Content rendered right of the strip (search, notifications…). */
@@ -35,6 +58,8 @@ export type WorkspaceTabBarProps = {
   autoOpen?: boolean
   /** Tear down a page's kept-alive subtree when its tab closes (default `true`). */
   destroyOnClose?: boolean
+  /** Show a ✕ on group chips that dissolves the group (default `true`). */
+  groupsDeletable?: boolean
 }
 
 function CloseGlyph() {
@@ -53,21 +78,26 @@ function CloseGlyph() {
 /**
  * Batteries-included tab bar. Auto-opens tabs on navigation, restores each
  * tab's last URL on click, supports middle-click / ✕ close (which also frees
- * the kept-alive subtree when the adapter supports it), and ships the scroll /
- * edge-fade / wheel behaviour. Navigation comes from the router adapter, so
- * the same bar works across routers.
+ * the kept-alive subtree when the adapter supports it), renders tab groups
+ * with collapse/expand, and ships the scroll / edge-fade / wheel behaviour.
+ * Navigation comes from the router adapter, so the same bar works across
+ * routers.
  */
 export function WorkspaceTabBar({
   renderIcon,
   renderClose,
+  renderGroup,
   leftSlot,
   rightSlot,
   classNames,
   className,
   autoOpen = true,
   destroyOnClose = true,
+  groupsDeletable = true,
 }: WorkspaceTabBarProps) {
-  const { tabs, closeTab } = useWorkspaceTabs()
+  const { closeTab } = useWorkspaceTabs()
+  const { toggleGroup, deleteGroup } = useWorkspaceGroups()
+  const segments = useWorkspaceStrip()
   const adapter = useAdapter()
   const navigate = adapter.useNavigate()
   const { pathname } = adapter.useLocation()
@@ -84,44 +114,136 @@ export function WorkspaceTabBar({
     if (isActive && next) navigate(next)
   }
 
+  /**
+   * Collapsing hides the group's tabs, so it must not keep the active one.
+   * Whether the active tab is inside is decided *before* the toggle, since
+   * the store has no notion of "active" — that lives in the router.
+   */
+  const handleToggleGroup = (group: TabGroup, groupTabs: WorkspaceTab[]) => {
+    const holdsActive = groupTabs.some((t) => t.pathname === pathname)
+    const next = toggleGroup(group.id)
+    if (holdsActive && next) navigate(next)
+  }
+
+  const handleDeleteGroupTabs = (group: TabGroup, groupTabs: WorkspaceTab[]) => {
+    const holdsActive = groupTabs.some((t) => t.pathname === pathname)
+    if (destroyOnClose) for (const t of groupTabs) destroy(t.pathname)
+    const next = deleteGroup(group.id, { closeTabs: true })
+    if (holdsActive && next) navigate(next)
+  }
+
+  const renderTab = (tab: WorkspaceTab) => {
+    const isActive = tab.pathname === pathname
+    return (
+      <Tab
+        key={tab.pathname}
+        active={isActive}
+        pinned={tab.pinned}
+        data-restored={tab.restored ? "true" : undefined}
+        onMiddleClick={
+          tab.pinned ? undefined : () => handleClose(tab.pathname, isActive)
+        }
+        className={cx(classNames?.tab, isActive && classNames?.tabActive)}
+        render={<Link to={tab.href} />}
+      >
+        {renderIcon && (
+          <span
+            className={cx("live-tabs-tab-icon", classNames?.icon)}
+            aria-hidden
+          >
+            {renderIcon(tab.iconKey, tab)}
+          </span>
+        )}
+        <span className={cx("live-tabs-tab-title", classNames?.title)}>
+          {tab.title}
+        </span>
+        {!tab.pinned && (
+          <TabClose
+            className={classNames?.close}
+            label={`Close ${tab.title}`}
+            onClose={() => handleClose(tab.pathname, isActive)}
+          >
+            {renderClose ? renderClose() : <CloseGlyph />}
+          </TabClose>
+        )}
+      </Tab>
+    )
+  }
+
   return (
     <div className={cx("live-tabs-bar", className, classNames?.root)}>
       {leftSlot}
       <TabStrip activeKey={pathname} className={classNames?.strip}>
-        {tabs.map((tab) => {
-          const isActive = tab.pathname === pathname
+        {segments.map((segment) => {
+          if (segment.kind === "tab") return renderTab(segment.tab)
+
+          const { group, tabs: groupTabs } = segment
+          const context: GroupRenderContext = {
+            tabs: groupTabs,
+            collapsed: group.collapsed,
+            toggle: () => handleToggleGroup(group, groupTabs),
+            remove: () => deleteGroup(group.id),
+            removeWithTabs: () => handleDeleteGroupTabs(group, groupTabs),
+          }
+
           return (
-            <Tab
-              key={tab.pathname}
-              active={isActive}
-              pinned={tab.pinned}
-              onMiddleClick={
-                tab.pinned ? undefined : () => handleClose(tab.pathname, isActive)
+            <div
+              key={group.id}
+              className={cx("live-tabs-group", classNames?.group)}
+              data-collapsed={group.collapsed ? "true" : "false"}
+              style={
+                group.color
+                  ? ({
+                      "--live-tabs-group-color": group.color,
+                    } as CSSProperties)
+                  : undefined
               }
-              className={cx(classNames?.tab, isActive && classNames?.tabActive)}
-              render={<Link to={tab.href} />}
             >
-              {renderIcon && (
-                <span
-                  className={cx("live-tabs-tab-icon", classNames?.icon)}
-                  aria-hidden
-                >
-                  {renderIcon(tab.iconKey, tab)}
-                </span>
+              {renderGroup ? (
+                renderGroup(group, context)
+              ) : (
+                <div className={cx("live-tabs-group-chip", classNames?.groupChip)}>
+                  <button
+                    type="button"
+                    className={cx(
+                      "live-tabs-group-toggle",
+                      classNames?.groupTitle,
+                    )}
+                    aria-expanded={!group.collapsed}
+                    aria-label={`${group.collapsed ? "Expand" : "Collapse"} ${group.title}`}
+                    onClick={context.toggle}
+                  >
+                    <span className="live-tabs-group-dot" aria-hidden />
+                    {group.title}
+                    {group.collapsed && (
+                      <span
+                        className={cx(
+                          "live-tabs-group-count",
+                          classNames?.groupCount,
+                        )}
+                      >
+                        {groupTabs.length}
+                      </span>
+                    )}
+                  </button>
+                  {groupsDeletable && (
+                    <button
+                      type="button"
+                      className={cx(
+                        "live-tabs-group-delete",
+                        classNames?.groupDelete,
+                      )}
+                      aria-label={`Ungroup ${group.title}`}
+                      title={`Ungroup ${group.title}`}
+                      onClick={context.remove}
+                    >
+                      <CloseGlyph />
+                    </button>
+                  )}
+                </div>
               )}
-              <span className={cx("live-tabs-tab-title", classNames?.title)}>
-                {tab.title}
-              </span>
-              {!tab.pinned && (
-                <TabClose
-                  className={classNames?.close}
-                  label={`Close ${tab.title}`}
-                  onClose={() => handleClose(tab.pathname, isActive)}
-                >
-                  {renderClose ? renderClose() : <CloseGlyph />}
-                </TabClose>
-              )}
-            </Tab>
+              {!group.collapsed && groupTabs.map(renderTab)}
+            </div>
           )
         })}
       </TabStrip>

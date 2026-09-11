@@ -9,10 +9,10 @@ import {
   useSearch,
 } from "@tanstack/react-router"
 
+import { CachedRoute, OffScreen } from "@live-tabs/core"
+
 import { FrozenLocationProvider } from "./frozen-location"
 import { useKeepAliveContext } from "./keep-alive-context"
-import CachedRoute from "./cached-route"
-import OffScreen from "./off-screen"
 
 /**
  * Walks the active route chain. The deepest leaf with

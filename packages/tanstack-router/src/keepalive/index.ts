@@ -9,7 +9,7 @@ export {
   useKeptPathname,
 } from "./frozen-location"
 export type { FrozenLocation } from "./frozen-location"
-export type { ActivityMode } from "./types"
+export type { ActivityMode } from "@live-tabs/core"
 
 /**
  * Opt a route into keep-alive:
