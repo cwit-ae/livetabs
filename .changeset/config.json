@@ -2,7 +2,14 @@
   "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
-  "fixed": [["@live-tabs/core", "@live-tabs/tanstack-router", "live-tabs"]],
+  "fixed": [
+    [
+      "@live-tabs/core",
+      "@live-tabs/tanstack-router",
+      "@live-tabs/next",
+      "live-tabs"
+    ]
+  ],
   "linked": [],
   "access": "public",
   "baseBranch": "main",

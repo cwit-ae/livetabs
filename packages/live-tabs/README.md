@@ -7,12 +7,25 @@ position, form input, filters, sub-section pickers, and in-flight queries all
 survive because each page's React subtree stays mounted off-screen. Built for
 admin consoles and dashboards where users hop between records all day.
 
-```
-npm i live-tabs
+```bash
+npm i live-tabs @tanstack/react-router zustand
 ```
 
 > Peer deps: `react`, `react-dom`, `@tanstack/react-router` (>=1.150), `zustand`.
 > Zero runtime dependencies of its own.
+
+> **Pick one entry point.** This package inlines `@live-tabs/core` and
+> `@live-tabs/tanstack-router` at build time so the published artifact is
+> self-contained. The keep-alive event bus is a module-level singleton, so
+> mixing `live-tabs` with direct `@live-tabs/*` imports in one app gives you two
+> event buses and `useActiveEffect` silently stops firing. If you need to import
+> `@live-tabs/core` directly, install
+> [`@live-tabs/tanstack-router`](https://www.npmjs.com/package/@live-tabs/tanstack-router)
+> instead of this umbrella.
+
+> **On the Next.js App Router?** Install
+> [`@live-tabs/next`](https://github.com/cwit-ae/livetabs/tree/main/packages/next) — this
+> package carries the TanStack Router adapter.
 
 ---
 
@@ -31,6 +44,9 @@ the way native app tabs work — and gives you the tab strip to drive it.
   the unstyled `<TabStrip>/<Tab>/<TabClose>` primitives yourself.
 - **Live titles** — `useSetTabTitle("Acme Inc")` upgrades a tab from its
   registry fallback once data lands.
+- **Tab groups** — gather tabs into named, collapsible groups. Collapsing hides
+  them from the bar without unmounting their pages.
+- **Optional session restore** — bring the tab strip back after a reload.
 
 ---
 
@@ -125,6 +141,61 @@ That's it. Pages now persist across tab switches, and the bar manages itself.
 
 ---
 
+## Tab groups
+
+Tabs can be gathered into named, collapsible groups. `<WorkspaceTabBar />`
+renders them; `useWorkspaceGroups()` drives them from your own menus:
+
+```tsx
+import { useWorkspaceGroups } from "live-tabs"
+
+const {
+  groups,
+  createGroup,      // ({ title, color, pathnames }) => groupId
+  renameGroup,
+  setGroupColor,
+  collapseGroup,    // returns where to navigate if the group held the active tab
+  expandGroup,
+  toggleGroup,
+  deleteGroup,      // ({ closeTabs: true }) to close its tabs as well
+  addTabToGroup,
+  removeTabFromGroup,
+} = useWorkspaceGroups()
+```
+
+- A group's tabs always sit together in the bar; grouping a tab slides it next
+  to its new siblings rather than reshuffling the strip.
+- Collapsing hides the members but **keeps their pages alive** — a collapsed
+  tab is still exactly where you left it.
+- A collapsed group never holds the active tab; the bar navigates out of it.
+- Closing the last tab in a group removes the group, as Chrome does.
+- The pinned root tab is never grouped.
+
+Building a custom bar? `useWorkspaceStrip()` returns the strip already chunked
+into loose tabs and group runs.
+
+## Surviving a reload
+
+Off by default. Opt in with `persist`:
+
+```tsx
+<WorkspaceProvider options={{ pinnedPath: "/dashboard" }} persist>
+```
+
+```tsx
+// or configure it — namespace the key per user, localStorage is shared
+<WorkspaceProvider persist={{ key: `live-tabs:${userId}`, version: 1 }}>
+```
+
+**What comes back is the strip, not the pages.** Titles, order, groups and
+collapsed state are restored; the pages are kept-alive React subtrees and
+cannot be serialised, so a restored tab mounts fresh the first time it is
+opened. Every restored tab carries `restored: true` until visited, and the
+default theme renders it muted and italic — style `[data-restored="true"]` to
+change that.
+
+---
+
 ## Headless usage
 
 Want your own bar, or just the tab UI without the router glue? Use
@@ -176,6 +247,15 @@ an `<a>`, etc.) with the tab semantics merged in.
 | `createWorkspaceTabsStore(options)` | Standalone store factory (no provider). |
 | `createTabRegistry(options)` | Path → `{ title, iconKey }` resolver. |
 
+### Groups & persistence
+| Export | What |
+| --- | --- |
+| `useWorkspaceGroups()` | Groups list + every group mutator. |
+| `useWorkspaceStrip()` | The strip as loose tabs and group runs. |
+| `buildStrip(tabs, groups)` | Same, as a pure function. |
+| `attachPersistence(store, opts)` | Restore + save the strip; returns a teardown. |
+| `readSnapshot` / `writeSnapshot` / `clearSnapshot` | Direct snapshot access. |
+
 ### Components
 | Export | What |
 | --- | --- |
@@ -189,8 +269,38 @@ an `<a>`, etc.) with the tab semantics merged in.
 | `KeepAliveProvider`, `KeepAliveOutlet` | The cache + the `<Outlet/>` replacement. |
 | `useKeepAlive()` | `{ aliveRoutes, destroy, destroyAll }` — free cached subtrees. |
 | `useActiveEffect(fn, deps)` | Like `useEffect`, but (re)runs on show / cleans up on hide. |
+| `<KeepAliveOutlet idleMs>` | Release subtrees hidden longer than `idleMs`. |
 | `useSetTabTitle(title)` | Live-rename the current tab. |
 | `useKeptPathname()` | The frozen pathname inside a kept subtree. |
+
+---
+
+## Memory footprint
+
+Keeping twenty pages mounted is the point of live-tabs, and also its cost:
+every hidden tab retains its React tree, its DOM, and whatever its components
+hold. `idleMs` caps that by releasing subtrees that have been hidden too long.
+
+```tsx
+<KeepAliveOutlet idleMs={5 * 60_000} />
+```
+
+An evicted tab **stays in the bar** — only its subtree is freed — and revisiting
+it mounts it fresh, exactly as a first visit would. The active tab is never
+evicted, however long it sits there.
+
+Off by default (`idleMs={0}`): silently discarding state is the opposite of
+what this library is for, so it has to be asked for.
+
+Some pages are expensive enough to rebuild that you would rather pay the
+memory. Protect them:
+
+```tsx
+<KeepAliveOutlet
+  idleMs={5 * 60_000}
+  idleOptions={{ keep: (pathname) => pathname.startsWith("/reports/") }}
+/>
+```
 
 ---
 
@@ -206,20 +316,29 @@ location so its own state isn't disturbed; use `useKeptPathname()` (not
 `useLocation`) when a kept page needs "which page am I?". `useQuery` dedupes,
 so query-driven UI is unaffected.
 
-State is intentionally **not** persisted across reloads — the kept React
-subtrees can't survive a reload, so persisting tab metadata alone would
-over-promise. A reload starts fresh with the pinned tab + the opened URL.
+Page state is **never** persisted across reloads — kept React subtrees can't
+survive one. Session restore is therefore opt-in and restores the *strip* only
+(see [Surviving a reload](#surviving-a-reload)), flagging every restored tab so
+it never pretends its page came back with it. Without `persist`, a reload
+starts fresh with the pinned tab + the opened URL.
 
 ---
 
+## Changelog
+
+[CHANGELOG.md](./CHANGELOG.md).
+
 ## Credits
 
-The keep-alive engine is adapted from
+The keep-alive engine is derived from
 [`tanstack-router-keepalive`](https://github.com/hemengke1997/tanstack-router-keepalive)
-(MIT). The off-screen rendering strategy and the direct-component render path
-differ from upstream to work with `@tanstack/react-router >= ~1.150` and stable
-React 19.
+by hemengke1997 (MIT). The off-screen rendering strategy and the
+direct-component render path differ from upstream to work with
+`@tanstack/react-router >= ~1.150` and stable React 19. The full upstream
+copyright and permission notice is reproduced in [LICENSE](./LICENSE).
 
 ## License
 
-MIT
+MIT — see [LICENSE](./LICENSE). All peers (`react`, `react-dom`, `zustand`,
+`@tanstack/react-router`) are MIT; this package bundles no third-party runtime
+code.

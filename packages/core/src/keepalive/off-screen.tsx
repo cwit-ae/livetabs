@@ -4,7 +4,7 @@ import type { ReactNode } from "react"
 import type { ActivityMode } from "./types"
 import { getKeepAliveEmitter } from "./hooks"
 
-type OffScreenProps = {
+export type OffScreenProps = {
   mode: ActivityMode
   pathname: string
   children: ReactNode

@@ -5,11 +5,12 @@
   "workspaces": [
     "packages/core",
     "packages/tanstack-router",
+    "packages/next",
     "packages/live-tabs"
   ],
   "scripts": {
-    "build": "npm run build -w @live-tabs/core && npm run build -w @live-tabs/tanstack-router && npm run build -w live-tabs",
-    "typecheck": "npm run build -w @live-tabs/core && npm run build -w @live-tabs/tanstack-router && npm run typecheck --workspaces --if-present",
+    "build": "npm run build -w @live-tabs/core && npm run build -w @live-tabs/tanstack-router && npm run build -w @live-tabs/next && npm run build -w live-tabs",
+    "typecheck": "npm run build -w @live-tabs/core && npm run build -w @live-tabs/tanstack-router && npm run build -w @live-tabs/next && npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint:pkg": "npm run build && npm run lint:pkg --workspaces --if-present",
@@ -29,6 +30,7 @@
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "jsdom": "^25.0.1",
+    "next": "^15.0.0",
     "publint": "^0.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -6,17 +6,23 @@
   "author": "live-tabs contributors",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/live-tabs/live-tabs.git",
+    "url": "git+https://github.com/cwit-ae/livetabs.git",
     "directory": "packages/core"
   },
-  "homepage": "https://github.com/live-tabs/live-tabs#readme",
-  "bugs": "https://github.com/live-tabs/live-tabs/issues",
+  "homepage": "https://github.com/cwit-ae/livetabs#readme",
+  "bugs": "https://github.com/cwit-ae/livetabs/issues",
   "publishConfig": {
     "access": "public"
   },
   "type": "module",
   "sideEffects": false,
-  "files": ["dist", "styles.css", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "styles.css",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",

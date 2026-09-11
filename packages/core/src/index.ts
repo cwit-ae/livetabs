@@ -7,7 +7,27 @@ export type {
   WorkspaceTabsState,
   WorkspaceTabsOptions,
   WorkspaceTabsStore,
+  WorkspaceSnapshot,
 } from "./store"
+
+// Tab groups.
+export {
+  buildStrip,
+  normalizeTabs,
+  groupIdOf,
+  isHiddenByCollapse,
+  nextGroupId,
+} from "./groups"
+export type { TabGroup, StripSegment } from "./groups"
+
+// Session persistence (opt-in — restores the strip, never the pages).
+export {
+  attachPersistence,
+  readSnapshot,
+  writeSnapshot,
+  clearSnapshot,
+} from "./persistence"
+export type { PersistOptions, StorageLike } from "./persistence"
 
 export { createTabRegistry } from "./registry"
 export type {
@@ -32,6 +52,8 @@ export {
   useWorkspaceContext,
   useWorkspaceTabsStore,
   useWorkspaceTabs,
+  useWorkspaceGroups,
+  useWorkspaceStrip,
 } from "./provider"
 export type { WorkspaceProviderProps } from "./provider"
 export { useAutoOpenTab } from "./hooks/use-auto-open-tab"
@@ -49,3 +71,21 @@ export { Tab } from "./components/tab"
 export type { TabProps } from "./components/tab"
 export { TabClose } from "./components/tab-close"
 export type { TabCloseProps } from "./components/tab-close"
+
+// Keep-alive engine (router-agnostic half). Router adapters build on these;
+// app code normally uses the hooks re-exported by its adapter package.
+export { TinyEmitter, OffScreen, CachedRoute } from "./keepalive"
+export {
+  getKeepAliveEmitter,
+  useEventListener,
+  useUpdate,
+  createActiveHooks,
+  useIdleEviction,
+} from "./keepalive"
+export type {
+  ActivityMode,
+  OffScreenProps,
+  CachedRouteProps,
+  KeepAliveEvents,
+  IdleEvictionOptions,
+} from "./keepalive"
