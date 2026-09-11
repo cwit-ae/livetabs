@@ -1,6 +1,6 @@
 # @live-tabs/core
 
-## Unreleased
+## 0.2.0
 
 Everything below is additive. No export was removed or renamed, and the tab
 store behaves identically to 0.1.0 for every pre-existing operation (verified

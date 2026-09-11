@@ -1,6 +1,6 @@
 {
   "name": "@live-tabs/tanstack-router",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TanStack Router adapter for live-tabs: keep-alive engine + workspace tabs that preserve page state across switches.",
   "keywords": [
     "tanstack-router",
@@ -57,7 +57,7 @@
     "lint:pkg": "publint --strict"
   },
   "dependencies": {
-    "@live-tabs/core": "0.1.0"
+    "@live-tabs/core": "0.2.0"
   },
   "peerDependencies": {
     "@tanstack/react-router": ">=1.150.0",

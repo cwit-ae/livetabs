@@ -1,6 +1,6 @@
 # @live-tabs/tanstack-router
 
-## Unreleased
+## 0.2.0
 
 The public API is unchanged: the same 17 exports, under the same names, with
 the same signatures. Existing apps need no changes.
@@ -43,3 +43,7 @@ the same signatures. Existing apps need no changes.
 - `@live-tabs/next` is now part of the fixed version group in
   `.changeset/config.json`. Without it the Next adapter could drift from the
   `@live-tabs/core` it targets.
+
+### Updated dependencies
+
+- @live-tabs/core@0.2.0

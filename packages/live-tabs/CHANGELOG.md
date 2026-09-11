@@ -1,6 +1,6 @@
 # live-tabs
 
-## Unreleased
+## 0.2.0
 
 The umbrella over `@live-tabs/core` + `@live-tabs/tanstack-router`, so it picks
 up everything added to both. No breaking changes.
