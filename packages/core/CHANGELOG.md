@@ -55,6 +55,13 @@ subtree", keeping the engine free of any router import.
 `[data-restored="true"]`, both driven by the existing CSS variables plus a new
 `--live-tabs-group-color`.
 
+**Idle eviction.** `useIdleEviction(keptPathnames, activePathname, destroy,
+idleMs, options)` releases kept-alive subtrees that have been hidden longer
+than `idleMs`, capping the memory a workspace holds. An evicted tab stays in
+the bar and remounts fresh when revisited; the active tab is never evicted.
+`options.keep` protects paths that are too expensive to rebuild. Disabled
+unless `idleMs` is a positive finite number.
+
 ### Notes
 
 - `WorkspaceTab.groupId` and `.restored` are optional; existing tabs and any

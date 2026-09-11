@@ -196,6 +196,35 @@ useActiveEffect(() => {
 }, [refetch])
 ```
 
+## Memory footprint
+
+Keeping twenty pages mounted is the point of live-tabs, and also its cost:
+every hidden tab retains its React tree, its DOM, and whatever its components
+hold. `idleMs` caps that by releasing subtrees that have been hidden too long.
+
+```tsx
+<WorkspaceOutlet idleMs={5 * 60_000}>{children}</WorkspaceOutlet>
+```
+
+An evicted tab **stays in the bar** — only its subtree is freed — and revisiting
+it mounts it fresh, exactly as a first visit would. The active tab is never
+evicted, however long it sits there.
+
+Off by default (`idleMs={0}`): silently discarding state is the opposite of
+what this library is for, so it has to be asked for.
+
+Some pages are expensive enough to rebuild that you would rather pay the
+memory. Protect them:
+
+```tsx
+<WorkspaceOutlet
+  idleMs={5 * 60_000}
+  idleOptions={{ keep: (pathname) => pathname.startsWith("/reports/") }}
+>
+  {children}
+</WorkspaceOutlet>
+```
+
 ## Notes
 
 - **Page state never survives a reload**, with or without `persist` — kept

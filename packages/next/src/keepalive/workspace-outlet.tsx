@@ -1,7 +1,8 @@
 import { useEffect } from "react"
 import type { ReactNode } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
-import { CachedRoute, OffScreen } from "@live-tabs/core"
+import { CachedRoute, OffScreen, useIdleEviction } from "@live-tabs/core"
+import type { IdleEvictionOptions } from "@live-tabs/core"
 
 import { FrozenLocationProvider } from "./frozen-location"
 import { useKeepAliveContext } from "./keep-alive-context"
@@ -14,6 +15,16 @@ export type WorkspaceOutletProps = {
    * unregistered pages behave exactly as they did before live-tabs.
    */
   children?: ReactNode
+  /**
+   * Milliseconds a hidden tab may idle before its subtree is released, to cap
+   * the memory the workspace holds. The tab stays in the bar and remounts
+   * fresh when revisited. `0` (the default) never evicts.
+   *
+   * A sensible starting point is five minutes: `idleMs={5 * 60_000}`.
+   */
+  idleMs?: number
+  /** Fine-tune the sweep, or protect specific paths from eviction. */
+  idleOptions?: IdleEvictionOptions
 }
 
 /**
@@ -25,14 +36,27 @@ export type WorkspaceOutletProps = {
  * area renders. Paths absent from `createWorkspaceRoutes` fall straight
  * through to `children`, so adoption is opt-in per route.
  */
-export function WorkspaceOutlet({ children }: WorkspaceOutletProps) {
-  const { aliveRoutes, ensureAliveRoute } = useKeepAliveContext()
+export function WorkspaceOutlet({
+  children,
+  idleMs = 0,
+  idleOptions,
+}: WorkspaceOutletProps) {
+  const { aliveRoutes, ensureAliveRoute, deleteAliveRoutes } =
+    useKeepAliveContext()
   const routes = useWorkspaceRoutes()
   const pathname = usePathname() ?? ""
   const searchParams = useSearchParams()
   const searchKey = searchParams?.toString() ?? ""
 
   const Component = routes.resolveComponent(pathname)
+
+  useIdleEviction(
+    Object.keys(aliveRoutes),
+    pathname,
+    (idle) => deleteAliveRoutes([idle]),
+    idleMs,
+    idleOptions,
+  )
 
   useEffect(() => {
     if (!Component) return

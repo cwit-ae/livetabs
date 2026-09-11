@@ -14,3 +14,5 @@ export {
   createActiveHooks,
 } from "./hooks"
 export type { KeepAliveEvents } from "./hooks"
+export { useIdleEviction } from "./idle"
+export type { IdleEvictionOptions } from "./idle"

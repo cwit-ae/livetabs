@@ -269,8 +269,38 @@ an `<a>`, etc.) with the tab semantics merged in.
 | `KeepAliveProvider`, `KeepAliveOutlet` | The cache + the `<Outlet/>` replacement. |
 | `useKeepAlive()` | `{ aliveRoutes, destroy, destroyAll }` — free cached subtrees. |
 | `useActiveEffect(fn, deps)` | Like `useEffect`, but (re)runs on show / cleans up on hide. |
+| `<KeepAliveOutlet idleMs>` | Release subtrees hidden longer than `idleMs`. |
 | `useSetTabTitle(title)` | Live-rename the current tab. |
 | `useKeptPathname()` | The frozen pathname inside a kept subtree. |
+
+---
+
+## Memory footprint
+
+Keeping twenty pages mounted is the point of live-tabs, and also its cost:
+every hidden tab retains its React tree, its DOM, and whatever its components
+hold. `idleMs` caps that by releasing subtrees that have been hidden too long.
+
+```tsx
+<KeepAliveOutlet idleMs={5 * 60_000} />
+```
+
+An evicted tab **stays in the bar** — only its subtree is freed — and revisiting
+it mounts it fresh, exactly as a first visit would. The active tab is never
+evicted, however long it sits there.
+
+Off by default (`idleMs={0}`): silently discarding state is the opposite of
+what this library is for, so it has to be asked for.
+
+Some pages are expensive enough to rebuild that you would rather pay the
+memory. Protect them:
+
+```tsx
+<KeepAliveOutlet
+  idleMs={5 * 60_000}
+  idleOptions={{ keep: (pathname) => pathname.startsWith("/reports/") }}
+/>
+```
 
 ---
 

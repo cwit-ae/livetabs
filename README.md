@@ -4,8 +4,9 @@
 switch between them without losing scroll, form input, filters, or in-flight
 queries — each page's React subtree stays mounted off-screen.
 
-Tabs can be gathered into named, collapsible **groups**, and the strip can
-optionally be **restored across reloads**.
+Tabs can be gathered into named, collapsible **groups**, the strip can
+optionally be **restored across reloads**, and inactive tabs can be
+**released after an idle timeout** to cap memory.
 
 This is the monorepo. Pick the package that matches your router.
 

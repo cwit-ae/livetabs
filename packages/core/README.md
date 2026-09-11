@@ -12,6 +12,8 @@ This package has **no router dependency**. It provides:
 - `buildStrip` / `useWorkspaceStrip` — the strip as loose tabs and group runs.
 - `OffScreen`, `CachedRoute`, `createActiveHooks` — the router-agnostic half of
   the keep-alive engine, which adapters build on.
+- `useIdleEviction` — release kept subtrees that have been hidden too long, to
+  cap the memory a workspace holds.
 - `TabStrip`, `Tab`, `TabClose` — headless, unstyled tab primitives.
 - `WorkspaceProvider`, `WorkspaceTabBar`, `useSetTabTitle`, `useAutoOpenTab` —
   driven by a `RouterAdapter` you supply.

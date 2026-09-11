@@ -20,6 +20,10 @@ the same signatures. Existing apps need no changes.
   load the default theme — you had to reach into a transitive dependency, which
   breaks under strict package managers such as pnpm.
 
+- `idleMs` / `idleOptions` on `KeepAliveOutlet` — release a hidden tab's
+  subtree after it has idled, to cap memory. The tab stays in the bar and
+  remounts fresh when revisited. Off by default.
+
 ### Changed
 
 - The router-agnostic keep-alive primitives (`OffScreen`, `CachedRoute`,

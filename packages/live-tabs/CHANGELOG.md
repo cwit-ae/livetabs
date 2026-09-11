@@ -13,6 +13,9 @@ up everything added to both. No breaking changes.
   `WorkspaceProvider`.
 - Group and restored-tab styling in `styles.css`.
 
+- Idle eviction: `<KeepAliveOutlet idleMs={5 * 60_000} />` releases subtrees
+  that have been hidden too long.
+
 ### Notes
 
 - This package inlines `@live-tabs/core` and `@live-tabs/tanstack-router` at

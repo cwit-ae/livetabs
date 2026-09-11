@@ -32,6 +32,12 @@ implied.
 implementation. `@live-tabs/tanstack-router`'s public API is unchanged — same
 17 exports, same names, same signatures.
 
+**Idle eviction for inactive tabs.** Hidden tabs can now be released after an
+idle timeout, so a long-lived workspace does not grow without bound. The tab
+stays in the bar; only its subtree is freed, and revisiting remounts it fresh.
+Off by default — silently discarding state is the opposite of what this library
+is for, so it has to be asked for.
+
 ### Compatibility
 
 No export was removed or renamed from any published package. The tab store

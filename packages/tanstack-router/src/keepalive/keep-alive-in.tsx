@@ -9,7 +9,8 @@ import {
   useSearch,
 } from "@tanstack/react-router"
 
-import { CachedRoute, OffScreen } from "@live-tabs/core"
+import { CachedRoute, OffScreen, useIdleEviction } from "@live-tabs/core"
+import type { IdleEvictionOptions } from "@live-tabs/core"
 
 import { FrozenLocationProvider } from "./frozen-location"
 import { useKeepAliveContext } from "./keep-alive-context"
@@ -24,11 +25,28 @@ import { useKeepAliveContext } from "./keep-alive-context"
  * captured at registration, so its URL-derived hooks see a stable view while
  * the user is elsewhere.
  */
-export default function KeepAliveIn() {
-  const { aliveRoutes, setAliveRoutes } = useKeepAliveContext()
+export type KeepAliveInProps = {
+  idleMs?: number
+  idleOptions?: IdleEvictionOptions
+}
+
+export default function KeepAliveIn({
+  idleMs = 0,
+  idleOptions,
+}: KeepAliveInProps = {}) {
+  const { aliveRoutes, setAliveRoutes, deleteAliveRoutes } =
+    useKeepAliveContext()
   const router = useRouter()
   const routerPathname = useLocation({ select: (l) => l.pathname })
   const liveSearch = useSearch({ strict: false }) as Record<string, unknown>
+
+  useIdleEviction(
+    Object.keys(aliveRoutes).filter((p) => aliveRoutes[p]?.staticData.keepAlive),
+    routerPathname,
+    (idle) => deleteAliveRoutes([idle]),
+    idleMs,
+    idleOptions,
+  )
 
   const matches = useMatches()
   const matchedKeys = useMemo(() => matches.map((m) => m.id), [matches])

@@ -80,10 +80,12 @@ export {
   useEventListener,
   useUpdate,
   createActiveHooks,
+  useIdleEviction,
 } from "./keepalive"
 export type {
   ActivityMode,
   OffScreenProps,
   CachedRouteProps,
   KeepAliveEvents,
+  IdleEvictionOptions,
 } from "./keepalive"

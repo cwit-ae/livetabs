@@ -27,6 +27,10 @@ pages stay alive across switches.
 - `persist` prop for restoring the tab strip across reloads.
 - Everything from `@live-tabs/core` is re-exported, including tab groups.
 
+- `idleMs` / `idleOptions` on `WorkspaceOutlet` — release a hidden tab's
+  subtree after it has idled, to cap memory. `idleMs={5 * 60_000}` is a
+  sensible starting point. Off by default.
+
 ### Notes
 
 - **Client-only by design.** The whole package is `"use client"`. There is no
