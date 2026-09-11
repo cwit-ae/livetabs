@@ -1,0 +1,60 @@
+{
+  "name": "@live-tabs/next",
+  "version": "0.1.0",
+  "description": "Next.js App Router adapter for live-tabs: client-side workspace tabs with kept-alive pages. Never touches the Next router.",
+  "license": "MIT",
+  "author": "live-tabs contributors",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cwit-ae/livetabs.git",
+    "directory": "packages/next"
+  },
+  "homepage": "https://github.com/cwit-ae/livetabs#readme",
+  "bugs": "https://github.com/cwit-ae/livetabs/issues",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "styles.css",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./styles.css": "./styles.css"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "lint:pkg": "publint --strict"
+  },
+  "dependencies": {
+    "@live-tabs/core": "0.1.0"
+  },
+  "peerDependencies": {
+    "next": ">=14",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "zustand": ">=4"
+  }
+}

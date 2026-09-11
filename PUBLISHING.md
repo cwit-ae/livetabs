@@ -1,15 +1,20 @@
 # Publishing
 
 How releases work for the live-tabs packages (`@live-tabs/core`,
-`@live-tabs/tanstack-router`, `live-tabs`).
+`@live-tabs/tanstack-router`, `@live-tabs/next`, `live-tabs`).
 
 **We use [Changesets](https://github.com/changesets/changesets), not
 `npm version`.** Don't run `npm version patch/minor/major` by hand — it would
 desync the version bumps from the changelog and the fixed-version group. You
 declare the bump type in a *changeset*; tooling does the rest.
 
-All three packages are **fixed to one version** (see `.changeset/config.json`),
-so any release bumps them together to the same number.
+All four packages are **fixed to one version** (see `.changeset/config.json`),
+so any release bumps them together to the same number and an adapter can never
+drift from the `@live-tabs/core` it targets.
+
+> Adding a new package? Add it to the `fixed` array in `.changeset/config.json`
+> in the same commit. A package left out of that array versions independently,
+> which is exactly the drift the fixed group exists to prevent.
 
 ---
 
@@ -43,15 +48,19 @@ npm login                 # your npm account with publish rights
 npm run build
 npm publish -w @live-tabs/core --access public
 npm publish -w @live-tabs/tanstack-router --access public
+npm publish -w @live-tabs/next --access public
 npm publish -w live-tabs --access public
 ```
+
+Order matters on a first publish: `@live-tabs/tanstack-router` and
+`@live-tabs/next` both depend on `@live-tabs/core`, so publish core first.
 
 (The scoped packages set `publishConfig.access: public`, so `--access public`
 is belt-and-suspenders.)
 
 ### 2. Configure Trusted Publishing
 
-On npmjs.com, for **each** of the three packages:
+On npmjs.com, for **each** of the four packages:
 
 > Package → **Settings** → **Publishing access** → add a **Trusted Publisher**
 
@@ -144,10 +153,44 @@ changelog. For a manual release, `changeset publish` creates the tags locally;
 | `npm run changeset`        | Record a change + its bump type (patch/minor/major).    |
 | `npm run version-packages` | Apply pending changesets: bump versions + changelogs.   |
 | `npm run release`          | Build, then `changeset publish` to npm.                 |
-| `npm run build`            | Build all packages (core → tanstack-router → umbrella). |
+| `npm run build`            | Build all packages (core → tanstack-router → next → umbrella). |
 | `npm test`                 | Run the test suite.                                     |
 | `npm run lint:pkg`         | Validate package publish-health (publint).              |
 | `npm run audit:prod`       | Audit production dependencies only.                     |
+
+---
+
+## Changelogs
+
+Each package has a hand-maintained `CHANGELOG.md` with an `## Unreleased`
+section describing work that has landed but not shipped. `changeset version`
+inserts its own numbered section for the pending changesets; fold the
+`Unreleased` notes into that section when you cut the release, so each shipped
+version has exactly one entry.
+
+The root [`CHANGELOG.md`](./CHANGELOG.md) is a summary that points at the
+per-package ones. Changesets does not manage it — update it by hand.
+
+---
+
+## Licensing checklist (before any publish)
+
+The keep-alive engine is derived from MIT-licensed upstream code, so the
+attribution has to travel with every artifact. Verify:
+
+```bash
+# LICENSE, README.md and CHANGELOG.md must appear in every tarball
+for p in core tanstack-router next live-tabs; do
+  (cd packages/$p && npm pack --dry-run 2>&1 | grep -E "LICENSE|README|CHANGELOG")
+done
+```
+
+- Every package's `files` array includes `LICENSE`, `README.md`, `CHANGELOG.md`.
+- Every package's `LICENSE` is identical to the root one, which reproduces the
+  upstream copyright and permission notice in full.
+- Every package declares `"license": "MIT"`.
+- No new runtime `dependencies` beyond `@live-tabs/core` — everything else is a
+  peer, licensed by the consuming app. Check with `npm run audit:prod`.
 
 ---
 
