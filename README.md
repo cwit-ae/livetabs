@@ -14,30 +14,24 @@ This is the monorepo. Pick the package that matches your router.
 
 | Package | Status | Use it when |
 | --- | --- | --- |
-| [`live-tabs`](./packages/live-tabs) | ✅ | You use **TanStack Router** and want one install. Umbrella over core + the TanStack adapter. |
 | [`@live-tabs/next`](./packages/next) | ✅ | You use the **Next.js App Router**. Client-side, never touches the Next router. |
-| [`@live-tabs/tanstack-router`](./packages/tanstack-router) | ✅ | Same as `live-tabs`, scoped. Use this if you also import `@live-tabs/core` directly. |
+| [`@live-tabs/tanstack-router`](./packages/tanstack-router) | ✅ | You use **TanStack Router**. Batteries included — re-exports core plus the keep-alive engine. |
 | [`@live-tabs/core`](./packages/core) | ✅ | You're writing a new router adapter, or want only the headless primitives. No router dependency. |
 | `@live-tabs/react-router` | 🚧 planned | React Router adapter. |
-
-> **Pick one entry point.** `live-tabs` inlines core and the TanStack adapter at
-> build time, and the keep-alive event bus is a module-level singleton. Mixing
-> `live-tabs` with direct `@live-tabs/*` imports in one app gives you two event
-> buses and `useActiveEffect` silently stops firing.
 
 ## Install and run
 
 Every package needs `react`, `react-dom` and `zustand` as peers.
 
-### `live-tabs` — TanStack Router, batteries included
+### `@live-tabs/tanstack-router` — TanStack Router, batteries included
 
 ```bash
-npm i live-tabs @tanstack/react-router zustand
+npm i @live-tabs/tanstack-router @tanstack/react-router zustand
 ```
 
 ```tsx
-import { WorkspaceProvider, WorkspaceTabBar, KeepAliveOutlet } from "live-tabs"
-import "live-tabs/styles.css" // optional default theme
+import { WorkspaceProvider, WorkspaceTabBar, KeepAliveOutlet } from "@live-tabs/tanstack-router"
+import "@live-tabs/tanstack-router/styles.css" // optional default theme
 
 // Opt a route into keep-alive:
 //   createFileRoute("/leads/$id")({
@@ -57,7 +51,7 @@ function RootLayout() {
 
 `<KeepAliveOutlet />` replaces TanStack's `<Outlet />` in the layout whose
 children should stay alive. Full guide:
-[packages/live-tabs/README.md](./packages/live-tabs/README.md).
+[packages/tanstack-router/README.md](./packages/tanstack-router/README.md).
 
 ### `@live-tabs/next` — Next.js App Router
 
@@ -119,7 +113,7 @@ off-screen renderer, the event bus, and the active-subtree hooks — lives in
 the location, freezing it per subtree, and resolving which component to render.
 
 ```
-@live-tabs/core  ◄── @live-tabs/tanstack-router ◄── live-tabs (umbrella)
+@live-tabs/core  ◄── @live-tabs/tanstack-router
                  ◄── @live-tabs/next
                  ◄── @live-tabs/react-router      (planned)
 ```
@@ -130,16 +124,16 @@ Adding a router is one new package and no changes to `@live-tabs/core`.
 
 ```bash
 npm install          # installs all workspaces
-npm run build        # core → tanstack-router → next → live-tabs, in order
+npm run build        # core → tanstack-router → next, in order
 npm run typecheck    # tsc across all packages
 npm test             # Vitest, all packages
 npm run lint:pkg     # publint — validates publish health of every package
 ```
 
 Build before testing at least once: the adapter packages resolve
-`@live-tabs/core` from its built `dist`, and `packages/live-tabs` is tested
-through its **built artifact** on purpose, to catch bundling bugs that
-source-level tests cannot.
+`@live-tabs/core` from its built `dist`, and `@live-tabs/tanstack-router` is
+additionally tested through its **built artifact**, to catch packaging bugs
+source-level tests cannot see.
 
 Versioning is via [changesets](./.changeset); all packages are **fixed** to one
 version so adapters never drift from the core they target.

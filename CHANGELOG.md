@@ -5,7 +5,6 @@ Per-package changelogs live alongside each package:
 - [`@live-tabs/core`](./packages/core/CHANGELOG.md)
 - [`@live-tabs/tanstack-router`](./packages/tanstack-router/CHANGELOG.md)
 - [`@live-tabs/next`](./packages/next/CHANGELOG.md)
-- [`live-tabs`](./packages/live-tabs/CHANGELOG.md)
 
 All packages are in one **fixed version group**, so they release together and
 an adapter never drifts from the core it targets.
