@@ -138,7 +138,9 @@ source-level tests cannot see.
 Versioning is via [changesets](./.changeset); all packages are **fixed** to one
 version so adapters never drift from the core they target.
 
-**Releasing?** See **[PUBLISHING.md](./PUBLISHING.md)**.
+**Releasing?** See **[PUBLISHING.md](./PUBLISHING.md)** — the step-by-step
+publish sequence, including the stale-branch check that makes a publish
+silently do nothing, and why release tags are never created by hand.
 
 ## Changelog
 

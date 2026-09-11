@@ -119,20 +119,111 @@ the "publish" button.
 
 ## Cutting a release (manual / local fallback)
 
-If you need to release without CI (e.g. a hotfix from your machine):
+For a hotfix from your machine, or any release before Trusted Publishing is
+configured for a package.
+
+### 1. Get on the branch that actually has the release
+
+This is the step that bites. Branches in this repo drift, and publishing from a
+stale one **fails silently**: `changeset publish` reads the local version, sees
+it is already on npm, publishes nothing, and exits 0. It looks like success.
 
 ```bash
-npm run changeset            # if you haven't already
-npm run version-packages     # applies bumps + updates CHANGELOGs (= changeset version)
-git commit -am "Version Packages"
-
-npm login                    # local publish uses your token, NOT OIDC
-npm run release              # = npm run build && changeset publish
-git push --follow-tags       # push the version commit + tags
+git checkout main
+git pull                 # do not skip — being one commit behind is enough
 ```
+
+Then prove you are where you think you are:
+
+```bash
+node -p "require('./packages/core/package.json').version"
+```
+
+If that is not the version you intend to ship, stop. Check whether the release
+landed on another branch:
+
+```bash
+for b in main origin/main dev origin/dev; do
+  printf "%-14s %s
+" "$b" "$(git show $b:packages/core/package.json | node -pe "JSON.parse(require('fs').readFileSync(0)).version")"
+done
+```
+
+### 2. Apply pending version bumps — only if there are any
+
+```bash
+npx changeset status     # lists what would be bumped, changes nothing
+```
+
+If it reports packages to bump, apply them:
+
+```bash
+npm run version-packages     # = changeset version: bumps + writes CHANGELOGs
+git commit -am "Version Packages"
+```
+
+If it reports nothing, the versions were already set — **skip this step**.
+Running it anyway is harmless but writes no bump, and it is not what makes a
+release happen.
+
+### 3. Verify exactly what CI verifies
+
+Run the whole block before anything irreversible. These are the same six steps
+as `.github/workflows/ci.yml`:
+
+```bash
+npm ci
+npm run build
+npm run typecheck
+npm test
+npm run lint:pkg
+npm run audit:prod
+```
+
+`audit:prod` is a gate, not advice — it exits non-zero on any advisory in the
+production tree and will fail CI even if the publish succeeded.
+
+### 4. Publish
+
+```bash
+npm whoami               # confirm the right account
+npm login                # only if that failed
+npm run release          # = npm run build && changeset publish
+```
+
+`changeset publish` walks packages in dependency order (core first), and skips
+any whose version is already on the registry — so it is safe to re-run if one
+package fails partway through.
+
+If the account enforces 2FA: `npx changeset publish --otp=123456`.
+
+### 5. Push the commits and the tags it created
+
+```bash
+git push --follow-tags
+```
+
+> **Do not create release tags by hand.** `changeset publish` creates them
+> itself, after each package is accepted by the registry — that is why
+> `@live-tabs/*@0.2.0` and `@0.2.1` exist. Tagging beforehand either collides
+> with what changesets writes, or leaves a tag pointing at a version that never
+> shipped. Tag after, never before.
 
 > A local publish authenticates with your npm login and **won't** attach the
 > OIDC provenance that CI does. Prefer the automated path for real releases.
+
+### If a package is brand new
+
+npm can only attach a Trusted Publisher to a package that already exists, so the
+first version of any new package name has to go out manually (see
+[One-time setup](#one-time-setup-before-the-very-first-release)). Check the name
+is actually available first — a 404 on the registry is necessary but **not
+sufficient**, because npm also rejects names too similar to an existing one:
+
+```bash
+npm view <name> version          # 404 = nothing published under that exact name
+npm publish -w <name> --dry-run  # surfaces a similarity rejection before it counts
+```
 
 ---
 
@@ -195,6 +286,29 @@ done
 
 ## Troubleshooting
 
+- **`changeset publish` said nothing was published, or the version on npm
+  didn't move.** You were almost certainly on a stale branch. It compares the
+  *local* `package.json` version against the registry and skips anything already
+  there — then exits 0. `git pull` and check
+  `node -p "require('./packages/core/package.json').version"` before blaming the
+  registry.
+- **`E403 ... Package name too similar to existing package <x>`.** npm rejects
+  names that differ from an existing one only by punctuation. This is permanent
+  while that package exists, and no retry or scope flag changes it — the name has
+  to change, or the package has to go. `npm publish --dry-run` surfaces it before
+  it costs you a release.
+- **`npm run audit:prod` fails but nothing in `dependencies` changed.** These
+  packages declare almost no runtime deps, so advisories usually arrive through a
+  *devDependency* that is also a declared peer (`next` is the common one). Fix the
+  dev tree — `npm audit fix`, or bump the dev dependency — rather than lowering
+  `--audit-level`, which would blind the gate for real issues too.
+- **Every merge conflicts on the same six files** (three `package.json`, three
+  `CHANGELOG.md`). That is structural, not bad luck: a version bump edits the
+  `version` line and prepends to the top of each changelog, and two branches
+  holding different versions always collide there. The fix is to bump on one
+  branch only — let the Version Packages PR do it on `main` and delete release
+  branches after merging, rather than keeping several alive with different
+  versions.
 - **`ENEEDAUTH` / OIDC not used in CI** — the runner's npm is too old. The
   workflow runs `npm install -g npm@latest`; ensure that step is present and
   `permissions: id-token: write` is set.
