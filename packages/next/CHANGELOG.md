@@ -2,13 +2,6 @@
 
 ## 0.2.0
 
-### Patch Changes
-
-- Updated dependencies [2f1e447]
-  - @live-tabs/core@0.2.0
-
-## Unreleased
-
 Initial release. Next.js App Router adapter — client-side workspace tabs whose
 pages stay alive across switches.
 
@@ -48,3 +41,7 @@ pages stay alive across switches.
   hoists away module-level directives, which silently dropped the
   `"use client"` banner and would have made the package unusable from a Server
   Component.
+
+### Updated dependencies
+
+- @live-tabs/core@0.2.0

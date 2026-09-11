@@ -2,45 +2,6 @@
 
 ## 0.2.0
 
-### Minor Changes
-
-- 2f1e447: Add `@live-tabs/next`, a Next.js App Router adapter.
-
-  The router-agnostic half of the keep-alive engine (`OffScreen`, `CachedRoute`,
-  `TinyEmitter`, `useEventListener`, `useUpdate`, `createActiveHooks`) moves from
-  `@live-tabs/tanstack-router` into `@live-tabs/core` so both adapters share one
-  implementation. `@live-tabs/tanstack-router` re-exports the same names it always
-  did — its public API is unchanged.
-
-  `@live-tabs/core` gains those exports plus `createActiveHooks`, which binds the
-  active-subtree hooks to an adapter's `useKeptPathname`.
-
-  `@live-tabs/core` also gains tab groups and opt-in session persistence, which
-  every adapter inherits through its `export * from "@live-tabs/core"`:
-
-  - Groups: `useWorkspaceGroups`, `useWorkspaceStrip`, `buildStrip`,
-    `normalizeTabs`, and the group actions on the store. A group's tabs stay
-    contiguous in the bar, collapsing hides them without killing their pages, and
-    a group disappears when its last tab closes.
-  - Persistence: `attachPersistence` plus a `persist` prop on `WorkspaceProvider`.
-    Off by default. It restores the _strip_ — titles, order, groups, collapsed
-    state — never page state, and flags every restored tab as `restored` until it
-    is opened so the difference stays visible.
-
-  `WorkspaceTabBar` renders groups, and `WorkspaceTab` gains optional `groupId`
-  and `restored` fields. Both are additive; existing usage is unaffected.
-
-  `@live-tabs/tanstack-router`'s `WorkspaceProvider` forwards the new `persist`
-  prop. Its public API is otherwise unchanged: the router-agnostic keep-alive
-  files it used to own now live in core and are re-exported under the same names.
-
-### Patch Changes
-
-- Updated dependencies [2f1e447]
-  - @live-tabs/core@0.2.0
-
-## Unreleased
-
 The public API is unchanged: the same 17 exports, under the same names, with
 the same signatures. Existing apps need no changes.
 
@@ -82,3 +43,7 @@ the same signatures. Existing apps need no changes.
 - `@live-tabs/next` is now part of the fixed version group in
   `.changeset/config.json`. Without it the Next adapter could drift from the
   `@live-tabs/core` it targets.
+
+### Updated dependencies
+
+- @live-tabs/core@0.2.0
