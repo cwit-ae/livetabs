@@ -1,5 +1,7 @@
 # live-tabs
 
+## 0.2.0
+
 ## Unreleased
 
 The umbrella over `@live-tabs/core` + `@live-tabs/tanstack-router`, so it picks

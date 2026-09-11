@@ -1,5 +1,12 @@
 # @live-tabs/next
 
+## 0.2.0
+
+### Patch Changes
+
+- Updated dependencies [2f1e447]
+  - @live-tabs/core@0.2.0
+
 ## Unreleased
 
 Initial release. Next.js App Router adapter — client-side workspace tabs whose

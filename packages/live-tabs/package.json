@@ -1,6 +1,6 @@
 {
   "name": "live-tabs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Browser-style workspace tabs with kept-alive pages for TanStack Router. Switch pages without losing scroll, form input, or query state.",
   "keywords": [
     "tanstack-router",
