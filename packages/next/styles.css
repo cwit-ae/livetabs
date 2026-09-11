@@ -16,6 +16,8 @@
   --live-tabs-hover-bg: #f9fafb;
   --live-tabs-radius: 0.375rem;
   --live-tabs-tab-max: 200px;
+  /* Floor for equal-width mode; below this the strip scrolls. */
+  --live-tabs-tab-min: 5.5rem;
 }
 
 .live-tabs-bar {
@@ -223,4 +225,48 @@
 .live-tabs-tab[data-restored="true"] .live-tabs-tab-title {
   opacity: 0.65;
   font-style: italic;
+}
+
+/* ── Equal-width tabs ───────────────────────────────────────────────────── */
+
+/*
+ * Browser behaviour, opt-in via `<WorkspaceTabBar tabWidth="equal" />`.
+ *
+ * Default (`auto`) sizes every tab to its own title, so widths differ. In
+ * `equal` mode each tab takes the same share of the rail and they shrink
+ * together as more open, until they hit `--live-tabs-tab-min` and the strip
+ * starts scrolling — the rail is already `overflow-x: auto`.
+ *
+ * `min-width` is what makes the scroll kick in: without a floor, flex items
+ * shrink indefinitely and tabs would thin to slivers instead of overflowing.
+ */
+.live-tabs-bar[data-tab-width="equal"] .live-tabs-tab {
+  flex: 1 1 0;
+  min-width: var(--live-tabs-tab-min);
+}
+
+/* Pinned tabs anchor the strip, so they keep their natural width and the
+   others divide what's left — as pinned tabs do in a browser. */
+.live-tabs-bar[data-tab-width="equal"] .live-tabs-tab[data-pinned="true"] {
+  flex: 0 0 auto;
+}
+
+/*
+ * A group is one flex item wrapping several tabs, so left alone it would take
+ * a single share and its members would end up narrower than loose tabs. The
+ * bar sets `--live-tabs-group-members` to the member count; claiming that many
+ * shares lines them back up.
+ *
+ * It also has to be allowed to shrink: the default rule pins groups at
+ * `flex-shrink: 0`, which would hold a group at full width while every loose
+ * tab around it shrank.
+ */
+.live-tabs-bar[data-tab-width="equal"] .live-tabs-group {
+  flex: var(--live-tabs-group-members, 1) 1 0;
+  min-width: 0;
+}
+
+/* Collapsed groups show only their chip, so they want intrinsic width. */
+.live-tabs-bar[data-tab-width="equal"] .live-tabs-group[data-collapsed="true"] {
+  flex: 0 0 auto;
 }

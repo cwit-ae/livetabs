@@ -108,6 +108,7 @@ export function useWorkspaceTabs() {
     renameTab: store((s) => s.renameTab),
     closeTab: store((s) => s.closeTab),
     closeAllTabs: store((s) => s.closeAllTabs),
+    moveTab: store((s) => s.moveTab),
   }
 }
 

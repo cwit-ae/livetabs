@@ -60,6 +60,21 @@ export type WorkspaceTabBarProps = {
   destroyOnClose?: boolean
   /** Show a ✕ on group chips that dissolves the group (default `true`). */
   groupsDeletable?: boolean
+  /**
+   * How tabs are sized.
+   *
+   * - `"auto"` (default) — each tab is as wide as its title, up to
+   *   `--live-tabs-tab-max`. Widths differ from tab to tab.
+   * - `"equal"` — browser behaviour: every tab takes the same share of the
+   *   rail and they shrink together as more open, down to
+   *   `--live-tabs-tab-min`, after which the strip scrolls. Pinned tabs keep
+   *   their natural width and the rest divide what's left; a group claims one
+   *   share per member so grouped tabs line up with loose ones.
+   *
+   * Requires the shipped `styles.css`. Rendered as `data-tab-width` on the
+   * bar, so a custom stylesheet can key off it too.
+   */
+  tabWidth?: "auto" | "equal"
 }
 
 function CloseGlyph() {
@@ -94,6 +109,7 @@ export function WorkspaceTabBar({
   autoOpen = true,
   destroyOnClose = true,
   groupsDeletable = true,
+  tabWidth = "auto",
 }: WorkspaceTabBarProps) {
   const { closeTab } = useWorkspaceTabs()
   const { toggleGroup, deleteGroup } = useWorkspaceGroups()
@@ -171,7 +187,10 @@ export function WorkspaceTabBar({
   }
 
   return (
-    <div className={cx("live-tabs-bar", className, classNames?.root)}>
+    <div
+      className={cx("live-tabs-bar", className, classNames?.root)}
+      data-tab-width={tabWidth}
+    >
       {leftSlot}
       <TabStrip activeKey={pathname} className={classNames?.strip}>
         {segments.map((segment) => {
@@ -192,11 +211,14 @@ export function WorkspaceTabBar({
               className={cx("live-tabs-group", classNames?.group)}
               data-collapsed={group.collapsed ? "true" : "false"}
               style={
-                group.color
-                  ? ({
-                      "--live-tabs-group-color": group.color,
-                    } as CSSProperties)
-                  : undefined
+                {
+                  // One flex share per member, so a group's tabs end up the
+                  // same width as loose ones in `equal` mode.
+                  "--live-tabs-group-members": groupTabs.length,
+                  ...(group.color
+                    ? { "--live-tabs-group-color": group.color }
+                    : {}),
+                } as CSSProperties
               }
             >
               {renderGroup ? (

@@ -9,6 +9,14 @@ Per-package changelogs live alongside each package:
 All packages are in one **fixed version group**, so they release together and
 an adapter never drifts from the core it targets.
 
+## 0.2.2
+
+**Drag-to-reorder.** `moveTab(pathname, toIndex, options?)` on the store and
+`useWorkspaceTabs()` reorders the strip, with `arrayMove` index semantics so a
+drag library's from/to pair maps straight through. Pinned tabs stay anchored,
+groups stay contiguous, and `options.groupId` lets a drop cross a group
+boundary. Reordering never navigates and never remounts a kept page.
+
 ## Unreleased
 
 **`@live-tabs/next` — a Next.js App Router adapter.** Client-side workspace

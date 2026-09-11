@@ -1,6 +1,6 @@
 {
   "name": "@live-tabs/core",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Router-agnostic core for live-tabs: workspace-tabs store, registry, headless tab primitives, and the RouterAdapter seam.",
   "license": "MIT",
   "author": "live-tabs contributors",

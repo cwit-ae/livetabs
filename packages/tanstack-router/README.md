@@ -110,6 +110,94 @@ Collapsing hides a group's tabs from the bar but **keeps their pages alive**.
 Closing a group's last tab removes the group. `useWorkspaceStrip()` gives you
 the strip pre-chunked into loose tabs and group runs for a custom bar.
 
+## Tab widths
+
+By default each tab is as wide as its title (capped at `--live-tabs-tab-max`),
+so widths differ from tab to tab. For browser behaviour — every tab the same
+width, all shrinking together as more open — ask for it:
+
+```tsx
+<WorkspaceTabBar tabWidth="equal" />
+```
+
+Tabs then divide the rail evenly and shrink down to `--live-tabs-tab-min`
+(default `5.5rem`), after which the strip scrolls rather than thinning them to
+slivers. Titles already truncate with an ellipsis.
+
+Retune the bounds like any other token:
+
+```css
+:root {
+  --live-tabs-tab-min: 7rem;   /* floor before the strip scrolls */
+  --live-tabs-tab-max: 240px;  /* ceiling, both modes */
+}
+```
+
+Two details it handles for you: **pinned tabs keep their natural width** and
+the rest divide what's left, as in a browser; and **a group claims one share
+per member**, so grouped tabs line up with loose ones instead of being squeezed
+into a single share.
+
+This needs the shipped `styles.css`. It is implemented as `data-tab-width` on
+the bar, so a custom stylesheet can key off the same attribute.
+
+## Reordering tabs
+
+`moveTab` reorders the strip. It uses the same index semantics as `arrayMove`,
+so a drag library's `from`/`to` pair maps straight through:
+
+```tsx
+import { useWorkspaceTabs } from "@live-tabs/tanstack-router"
+import { DndContext, closestCenter } from "@dnd-kit/core"
+import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable"
+
+function Bar() {
+  const { tabs, moveTab } = useWorkspaceTabs()
+
+  return (
+    <DndContext
+      collisionDetection={closestCenter}
+      onDragEnd={({ active, over }) => {
+        if (!over || active.id === over.id) return
+        const to = tabs.findIndex((t) => t.pathname === over.id)
+        moveTab(active.id as string, to)
+      }}
+    >
+      <SortableContext
+        items={tabs.map((t) => t.pathname)}
+        strategy={horizontalListSortingStrategy}
+      >
+        {/* your sortable tabs */}
+      </SortableContext>
+    </DndContext>
+  )
+}
+```
+
+Indices address the **full `tabs` array**, not a filtered view of it. If your
+bar hides the members of collapsed groups, resolve the drop target back to its
+index in `tabs` — as above, by looking up the pathname — rather than using the
+index of the rendered item.
+
+Dropping across a group boundary is explicit:
+
+```tsx
+moveTab(pathname, to, { groupId })        // join that group
+moveTab(pathname, to, { groupId: null })  // drop it loose
+```
+
+Omit the option and the tab keeps the group it had — in which case landing
+inside another group's run is undone, because a group's tabs must stay
+contiguous.
+
+Two invariants hold whatever you pass, so the drag layer needn't special-case
+them: **pinned tabs never move and nothing moves ahead of one** (an index that
+would land before a pinned tab is clamped past it), and **a group's tabs stay
+contiguous** (dragging the last member out releases the group).
+
+Reordering is a strip operation only. It never navigates, and it never disturbs
+a kept-alive subtree — dragging a tab cannot lose what is typed in it.
+
 ## Surviving a reload
 
 Off by default; opt in with `persist` (shown above), or configure it:
