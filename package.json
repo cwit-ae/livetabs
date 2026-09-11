@@ -1,15 +1,15 @@
 {
   "name": "live-tabs",
+  "private": true,
   "version": "0.1.0",
   "description": "Browser-style workspace tabs with kept-alive pages for TanStack Router. Switch pages without losing scroll, form input, or query state.",
   "workspaces": [
     "packages/core",
     "packages/tanstack-router",
-    "packages/next",
-    "packages/live-tabs"
+    "packages/next"
   ],
   "scripts": {
-    "build": "npm run build -w @live-tabs/core && npm run build -w @live-tabs/tanstack-router && npm run build -w @live-tabs/next && npm run build -w live-tabs",
+    "build": "npm run build -w @live-tabs/core && npm run build -w @live-tabs/tanstack-router && npm run build -w @live-tabs/next",
     "typecheck": "npm run build -w @live-tabs/core && npm run build -w @live-tabs/tanstack-router && npm run build -w @live-tabs/next && npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -30,7 +30,7 @@
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "jsdom": "^25.0.1",
-    "next": "^15.0.0",
+    "next": "^16.0.0",
     "publint": "^0.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

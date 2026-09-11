@@ -1,14 +1,14 @@
 # Publishing
 
 How releases work for the live-tabs packages (`@live-tabs/core`,
-`@live-tabs/tanstack-router`, `@live-tabs/next`, `live-tabs`).
+`@live-tabs/tanstack-router`, `@live-tabs/next`).
 
 **We use [Changesets](https://github.com/changesets/changesets), not
 `npm version`.** Don't run `npm version patch/minor/major` by hand — it would
 desync the version bumps from the changelog and the fixed-version group. You
 declare the bump type in a *changeset*; tooling does the rest.
 
-All four packages are **fixed to one version** (see `.changeset/config.json`),
+All three packages are **fixed to one version** (see `.changeset/config.json`),
 so any release bumps them together to the same number and an adapter can never
 drift from the `@live-tabs/core` it targets.
 
@@ -49,7 +49,6 @@ npm run build
 npm publish -w @live-tabs/core --access public
 npm publish -w @live-tabs/tanstack-router --access public
 npm publish -w @live-tabs/next --access public
-npm publish -w live-tabs --access public
 ```
 
 Order matters on a first publish: `@live-tabs/tanstack-router` and
@@ -60,7 +59,7 @@ is belt-and-suspenders.)
 
 ### 2. Configure Trusted Publishing
 
-On npmjs.com, for **each** of the four packages:
+On npmjs.com, for **each** of the three packages:
 
 > Package → **Settings** → **Publishing access** → add a **Trusted Publisher**
 
@@ -153,7 +152,7 @@ changelog. For a manual release, `changeset publish` creates the tags locally;
 | `npm run changeset`        | Record a change + its bump type (patch/minor/major).    |
 | `npm run version-packages` | Apply pending changesets: bump versions + changelogs.   |
 | `npm run release`          | Build, then `changeset publish` to npm.                 |
-| `npm run build`            | Build all packages (core → tanstack-router → next → umbrella). |
+| `npm run build`            | Build all packages (core → tanstack-router → next). |
 | `npm test`                 | Run the test suite.                                     |
 | `npm run lint:pkg`         | Validate package publish-health (publint).              |
 | `npm run audit:prod`       | Audit production dependencies only.                     |
@@ -180,7 +179,7 @@ attribution has to travel with every artifact. Verify:
 
 ```bash
 # LICENSE, README.md and CHANGELOG.md must appear in every tarball
-for p in core tanstack-router next live-tabs; do
+for p in core tanstack-router next; do
   (cd packages/$p && npm pack --dry-run 2>&1 | grep -E "LICENSE|README|CHANGELOG")
 done
 ```
