@@ -19,3 +19,9 @@ if (typeof (globalThis as { ResizeObserver?: unknown }).ResizeObserver === "unde
 if (!Element.prototype.scrollIntoView) {
   Element.prototype.scrollIntoView = function scrollIntoView() {}
 }
+
+// TanStack Router's scroll restoration calls this on every navigation.
+if (typeof window !== "undefined" && !("__scrollToStubbed" in window)) {
+  window.scrollTo = function scrollTo() {}
+  ;(window as unknown as Record<string, boolean>).__scrollToStubbed = true
+}

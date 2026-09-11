@@ -116,17 +116,23 @@ function defaultIsFallbackTitle(currentTitle: string): boolean {
   return currentTitle.startsWith("#") || currentTitle.includes(" #")
 }
 
-/** Groups that had members before but none after. Chrome drops these too. */
+/**
+ * Drop groups that had members before but none after. Chrome does this too.
+ *
+ * Returns the *same array* when nothing is dropped: every tab open and close
+ * runs this, and handing back a fresh array each time would re-render every
+ * subscriber of `groups` on every navigation.
+ */
 function pruneEmptiedGroups(
   groups: TabGroup[],
   before: WorkspaceTab[],
   after: WorkspaceTab[],
 ): TabGroup[] {
-  const had = new Set(
-    before.map((t) => t.groupId).filter(Boolean) as string[],
-  )
+  if (groups.length === 0) return groups
+  const had = new Set(before.map((t) => t.groupId).filter(Boolean) as string[])
   const has = new Set(after.map((t) => t.groupId).filter(Boolean) as string[])
-  return groups.filter((g) => !(had.has(g.id) && !has.has(g.id)))
+  const next = groups.filter((g) => !(had.has(g.id) && !has.has(g.id)))
+  return next.length === groups.length ? groups : next
 }
 
 /**

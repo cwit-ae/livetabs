@@ -27,9 +27,11 @@ describe("normalizeTabs", () => {
   const t = (pathname: string, groupId?: string | null, pinned?: boolean) =>
     ({ pathname, href: pathname, title: pathname, groupId, pinned }) as WorkspaceTab
 
-  it("pulls pinned tabs to the front", () => {
+  it("leaves ungrouped order exactly as it found it", () => {
+    // Order with no groups must match pre-groups behaviour byte for byte —
+    // including not hoisting pinned tabs, which 0.1.0 never did.
     const out = normalizeTabs([t("/a"), t("/", null, true), t("/b")])
-    expect(out.map((x) => x.pathname)).toEqual(["/", "/a", "/b"])
+    expect(out.map((x) => x.pathname)).toEqual(["/a", "/", "/b"])
   })
 
   it("gathers a group's tabs into one run at its first member's position", () => {
@@ -204,6 +206,37 @@ describe("group actions", () => {
     const store = seed(["/a"])
     store.getState().createGroup({ title: "Staging" })
     expect(store.getState().groups).toHaveLength(1)
+  })
+
+  it("does not churn the groups reference when groups are untouched", () => {
+    const store = make()
+    let changes = 0
+    let last = store.getState().groups
+    store.subscribe(() => {
+      const now = store.getState().groups
+      if (now !== last) {
+        changes += 1
+        last = now
+      }
+    })
+
+    for (const p of ["/a", "/b", "/c"]) store.getState().openTab(tab(p))
+    store.getState().closeTab("/a")
+
+    // Opening and closing tabs runs the group pruner. If it handed back a new
+    // array each time, every subscriber of `groups` would re-render on every
+    // navigation.
+    expect(changes).toBe(0)
+  })
+
+  it("still swaps the groups reference when a group really is dropped", () => {
+    const store = seed(["/a"])
+    store.getState().createGroup({ pathnames: ["/a"] })
+    const before = store.getState().groups
+
+    store.getState().closeTab("/a")
+    expect(store.getState().groups).not.toBe(before)
+    expect(store.getState().groups).toHaveLength(0)
   })
 
   it("ignores unknown groups and tabs", () => {

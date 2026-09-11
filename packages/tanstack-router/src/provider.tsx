@@ -1,7 +1,11 @@
 import type { ReactNode } from "react"
 
 import { WorkspaceProvider as CoreWorkspaceProvider } from "@live-tabs/core"
-import type { WorkspaceTabsOptions, TabRegistry } from "@live-tabs/core"
+import type {
+  PersistOptions,
+  WorkspaceTabsOptions,
+  TabRegistry,
+} from "@live-tabs/core"
 
 import { KeepAliveProvider } from "./keepalive/keep-alive-context"
 import { tanstackRouterAdapter } from "./adapter"
@@ -11,6 +15,15 @@ export type WorkspaceProviderProps = {
   options?: WorkspaceTabsOptions
   /** Path → tab-meta resolver (from `createTabRegistry`). */
   registry?: TabRegistry
+  /**
+   * Restore the tab strip across reloads. `true` uses the defaults; pass an
+   * object for the storage key, version or backend. Off by default.
+   *
+   * Only the strip comes back — titles, order, groups, collapsed state — never
+   * the pages, which are kept-alive React subtrees and cannot be serialised.
+   * Restored tabs carry `restored: true` until opened.
+   */
+  persist?: boolean | PersistOptions
   /**
    * Also mount `KeepAliveProvider` (default `true`). Set `false` if you place
    * `KeepAliveProvider` yourself, higher in the tree.
@@ -27,6 +40,7 @@ export type WorkspaceProviderProps = {
 export function WorkspaceProvider({
   options,
   registry,
+  persist,
   keepAlive = true,
   children,
 }: WorkspaceProviderProps) {
@@ -35,6 +49,7 @@ export function WorkspaceProvider({
       adapter={tanstackRouterAdapter}
       options={options}
       registry={registry}
+      persist={persist}
     >
       {children}
     </CoreWorkspaceProvider>

@@ -1,6 +1,6 @@
 ---
 "@live-tabs/core": minor
-"@live-tabs/tanstack-router": patch
+"@live-tabs/tanstack-router": minor
 ---
 
 Add `@live-tabs/next`, a Next.js App Router adapter.
@@ -28,3 +28,7 @@ every adapter inherits through its `export * from "@live-tabs/core"`:
 
 `WorkspaceTabBar` renders groups, and `WorkspaceTab` gains optional `groupId`
 and `restored` fields. Both are additive; existing usage is unaffected.
+
+`@live-tabs/tanstack-router`'s `WorkspaceProvider` forwards the new `persist`
+prop. Its public API is otherwise unchanged: the router-agnostic keep-alive
+files it used to own now live in core and are re-exported under the same names.

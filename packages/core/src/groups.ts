@@ -25,24 +25,21 @@ export function groupIdOf(tab: WorkspaceTab): string | null {
 }
 
 /**
- * Enforce the strip's two ordering invariants:
- *   1. pinned tabs come first
- *   2. each group's tabs occupy one contiguous run, positioned where that
- *      group's first member already sat
+ * Enforce the strip's one ordering invariant: each group's tabs occupy a
+ * single contiguous run, positioned where that group's first member already
+ * sat. Everything else keeps its relative order, so grouping a tab slides it
+ * to its group rather than reshuffling the bar under the user.
  *
- * Relative order is otherwise preserved, so this is safe to run after every
- * mutation — grouping a tab pulls it to its group rather than reshuffling the
- * bar under the user.
+ * Deliberately *not* a "pinned tabs first" sort. Tab order without groups has
+ * to stay exactly what it was before groups existed, and the pinned root is
+ * seeded at index 0 and stays there on its own. With no groups in play this
+ * function is an order-preserving copy.
  */
 export function normalizeTabs(tabs: WorkspaceTab[]): WorkspaceTab[] {
-  const ordered = [
-    ...tabs.filter((t) => t.pinned),
-    ...tabs.filter((t) => !t.pinned),
-  ]
   const result: WorkspaceTab[] = []
   const flushed = new Set<string>()
 
-  for (const tab of ordered) {
+  for (const tab of tabs) {
     const groupId = groupIdOf(tab)
     if (groupId === null) {
       result.push(tab)
@@ -50,7 +47,7 @@ export function normalizeTabs(tabs: WorkspaceTab[]): WorkspaceTab[] {
     }
     if (flushed.has(groupId)) continue
     flushed.add(groupId)
-    for (const member of ordered) {
+    for (const member of tabs) {
       if (groupIdOf(member) === groupId) result.push(member)
     }
   }
