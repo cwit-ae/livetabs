@@ -1,0 +1,226 @@
+/**
+ * Optional default theme for live-tabs. Import once:
+ *   import "live-tabs/styles.css"
+ *
+ * Everything is driven by CSS variables so you can retheme in one place.
+ * Skip this file entirely and style the `live-tabs-*` classes / data-attributes
+ * yourself if you'd rather.
+ */
+:root {
+  --live-tabs-height: 3.5rem;
+  --live-tabs-bg: #ffffff;
+  --live-tabs-border: #e5e7eb;
+  --live-tabs-fg: #111827;
+  --live-tabs-fg-muted: #6b7280;
+  --live-tabs-active-bg: #f3f4f6;
+  --live-tabs-hover-bg: #f9fafb;
+  --live-tabs-radius: 0.375rem;
+  --live-tabs-tab-max: 200px;
+}
+
+.live-tabs-bar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: var(--live-tabs-height);
+  padding: 0 0.75rem;
+  border-bottom: 1px solid var(--live-tabs-border);
+  background: var(--live-tabs-bg);
+}
+
+.live-tabs-strip {
+  gap: 0.125rem;
+}
+
+.live-tabs-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2rem;
+  max-width: var(--live-tabs-tab-max);
+  padding: 0 0.625rem;
+  border-radius: var(--live-tabs-radius);
+  font-size: 13px;
+  line-height: 1;
+  color: var(--live-tabs-fg-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  outline: none;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.live-tabs-tab:hover {
+  background: var(--live-tabs-hover-bg);
+  color: var(--live-tabs-fg);
+}
+
+.live-tabs-tab[data-active="true"] {
+  background: var(--live-tabs-active-bg);
+  color: var(--live-tabs-fg);
+  font-weight: 500;
+}
+
+.live-tabs-tab:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--live-tabs-fg) 25%, transparent);
+}
+
+.live-tabs-tab-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.live-tabs-tab-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.live-tabs-tab-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-right: -0.25rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--live-tabs-fg-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background-color 0.15s, color 0.15s;
+}
+
+.live-tabs-tab:hover .live-tabs-tab-close,
+.live-tabs-tab[data-active="true"] .live-tabs-tab-close,
+.live-tabs-tab-close:focus-visible {
+  opacity: 1;
+}
+
+.live-tabs-tab-close:hover {
+  background: color-mix(in srgb, var(--live-tabs-fg) 10%, transparent);
+  color: var(--live-tabs-fg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --live-tabs-bg: #0b0b0c;
+    --live-tabs-border: #27272a;
+    --live-tabs-fg: #fafafa;
+    --live-tabs-fg-muted: #a1a1aa;
+    --live-tabs-active-bg: #1f1f23;
+    --live-tabs-hover-bg: #161618;
+  }
+}
+
+/* ── Tab groups ─────────────────────────────────────────────────────────── */
+
+.live-tabs-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  flex-shrink: 0;
+  padding: 0 0.25rem;
+  border-radius: var(--live-tabs-radius);
+  background: color-mix(
+    in srgb,
+    var(--live-tabs-group-color, var(--live-tabs-fg-muted)) 10%,
+    transparent
+  );
+}
+
+.live-tabs-group-chip {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.live-tabs-group-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 1.5rem;
+  max-width: var(--live-tabs-tab-max);
+  padding: 0 0.375rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--live-tabs-fg);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.live-tabs-group-toggle:hover {
+  background: color-mix(in srgb, var(--live-tabs-fg) 8%, transparent);
+}
+
+.live-tabs-group-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--live-tabs-fg) 25%, transparent);
+}
+
+.live-tabs-group-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--live-tabs-group-color, var(--live-tabs-fg-muted));
+}
+
+.live-tabs-group-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--live-tabs-fg) 12%, transparent);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.live-tabs-group-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--live-tabs-fg-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background-color 0.15s, color 0.15s;
+}
+
+.live-tabs-group:hover .live-tabs-group-delete,
+.live-tabs-group-delete:focus-visible {
+  opacity: 1;
+}
+
+.live-tabs-group-delete:hover {
+  background: color-mix(in srgb, var(--live-tabs-fg) 10%, transparent);
+  color: var(--live-tabs-fg);
+}
+
+/*
+ * A tab rebuilt from a persisted session. Its page is not alive yet — it
+ * mounts fresh on first visit — so it reads as pending rather than open.
+ */
+.live-tabs-tab[data-restored="true"] .live-tabs-tab-title {
+  opacity: 0.65;
+  font-style: italic;
+}

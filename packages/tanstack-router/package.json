@@ -2,22 +2,35 @@
   "name": "@live-tabs/tanstack-router",
   "version": "0.1.0",
   "description": "TanStack Router adapter for live-tabs: keep-alive engine + workspace tabs that preserve page state across switches.",
-  "keywords": ["tanstack-router", "react", "tabs", "keep-alive", "keepalive", "workspace"],
+  "keywords": [
+    "tanstack-router",
+    "react",
+    "tabs",
+    "keep-alive",
+    "keepalive",
+    "workspace"
+  ],
   "license": "MIT",
   "author": "live-tabs contributors",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/live-tabs/live-tabs.git",
+    "url": "git+https://github.com/cwit-ae/livetabs.git",
     "directory": "packages/tanstack-router"
   },
-  "homepage": "https://github.com/live-tabs/live-tabs#readme",
-  "bugs": "https://github.com/live-tabs/live-tabs/issues",
+  "homepage": "https://github.com/cwit-ae/livetabs#readme",
+  "bugs": "https://github.com/cwit-ae/livetabs/issues",
   "publishConfig": {
     "access": "public"
   },
   "type": "module",
   "sideEffects": false,
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "styles.css",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -31,7 +44,8 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
-    }
+    },
+    "./styles.css": "./styles.css"
   },
   "engines": {
     "node": ">=18"

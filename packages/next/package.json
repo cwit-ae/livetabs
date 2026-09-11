@@ -16,7 +16,13 @@
   },
   "type": "module",
   "sideEffects": false,
-  "files": ["dist", "styles.css", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "styles.css",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",

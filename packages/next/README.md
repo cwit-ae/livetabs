@@ -16,11 +16,17 @@ plus:
 
 Tab groups and session persistence live in the core and are re-exported here.
 
-```
-npm i @live-tabs/next
+## Install
+
+```bash
+npm i @live-tabs/next zustand
 ```
 
-> Peers: `next` (>=14), `react`, `react-dom`, `zustand`.
+> Peers: `next` (>=14), `react` (>=18), `react-dom` (>=18), `zustand` (>=4).
+> The only runtime dependency is `@live-tabs/core`, installed for you.
+
+Using TanStack Router instead? Install
+[`live-tabs`](https://github.com/cwit-ae/livetabs/tree/main/packages/live-tabs).
 
 ## Client-only by design
 
@@ -199,6 +205,19 @@ useActiveEffect(() => {
 - Tabs are keyed by pathname, so one pathname is one tab. Two records that
   should each get a tab need distinct paths.
 
+## Changelog
+
+[CHANGELOG.md](./CHANGELOG.md).
+
+## Credits
+
+The keep-alive engine is derived from
+[`tanstack-router-keepalive`](https://github.com/hemengke1997/tanstack-router-keepalive)
+by hemengke1997 (MIT), by way of `@live-tabs/tanstack-router`. The upstream
+copyright and permission notice is reproduced in [LICENSE](./LICENSE), which
+also records what differs.
+
 ## License
 
-MIT
+MIT — see [LICENSE](./LICENSE). All peers (`next`, `react`, `react-dom`,
+`zustand`) are MIT; this package bundles no third-party runtime code.
