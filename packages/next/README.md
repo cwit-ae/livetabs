@@ -25,8 +25,9 @@ npm i @live-tabs/next zustand
 > Peers: `next` (>=14), `react` (>=18), `react-dom` (>=18), `zustand` (>=4).
 > The only runtime dependency is `@live-tabs/core`, installed for you.
 
-Using TanStack Router instead? Install
-[`@live-tabs/tanstack-router`](https://www.npmjs.com/package/@live-tabs/tanstack-router).
+Using TanStack Router or React Router instead? Install
+[`@live-tabs/tanstack-router`](https://www.npmjs.com/package/@live-tabs/tanstack-router)
+or [`@live-tabs/react-router`](https://github.com/cwit-ae/livetabs/tree/main/packages/react-router).
 
 ## Client-only by design
 
