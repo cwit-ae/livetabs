@@ -1,9 +1,5 @@
-import { useMemo } from "react"
-import {
-  createActiveHooks,
-  useEventListener,
-  useUpdate,
-} from "@live-tabs/core"
+import { useCallback, useMemo } from "react"
+import { createActiveHooks } from "@live-tabs/core"
 
 import { useKeptPathname } from "./frozen-location"
 import { useKeepAliveContext } from "./keep-alive-context"
@@ -21,7 +17,8 @@ export const useActiveEffect = activeHooks.useActiveEffect
 /**
  * Read the live keep-alive map (kept routes only) plus imperative destroy
  * helpers. `destroy(pathname)` frees a cached subtree — call it when closing
- * a tab so the page's React tree is torn down.
+ * a tab so the page's React tree is torn down. Every returned function is
+ * referentially stable.
  */
 export function useKeepAlive() {
   const { aliveRoutes: _aliveRoutes, deleteAliveRoutes } = useKeepAliveContext()
@@ -33,13 +30,18 @@ export function useKeepAlive() {
     }, {} as AliveRoutes)
   }, [_aliveRoutes])
 
-  const update = useUpdate()
-  useEventListener({ on: { activeChange: () => update() } })
+  const destroy = useCallback(
+    (pathname: string | string[]) =>
+      deleteAliveRoutes(Array.isArray(pathname) ? pathname : [pathname]),
+    [deleteAliveRoutes],
+  )
+  const destroyAll = useCallback(
+    () => deleteAliveRoutes(Object.keys(aliveRoutes)),
+    [deleteAliveRoutes, aliveRoutes],
+  )
 
-  const destroy = (pathname: string | string[]) => {
-    deleteAliveRoutes(Array.isArray(pathname) ? pathname : [pathname])
-  }
-  const destroyAll = () => deleteAliveRoutes(Object.keys(aliveRoutes))
-
-  return { aliveRoutes, destroy, destroyAll }
+  return useMemo(
+    () => ({ aliveRoutes, destroy, destroyAll }),
+    [aliveRoutes, destroy, destroyAll],
+  )
 }
