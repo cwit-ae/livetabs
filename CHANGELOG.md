@@ -5,9 +5,22 @@ Per-package changelogs live alongside each package:
 - [`@live-tabs/core`](./packages/core/CHANGELOG.md)
 - [`@live-tabs/tanstack-router`](./packages/tanstack-router/CHANGELOG.md)
 - [`@live-tabs/next`](./packages/next/CHANGELOG.md)
+- [`@live-tabs/react-router`](./packages/react-router/CHANGELOG.md)
 
 All packages are in one **fixed version group**, so they release together and
 an adapter never drifts from the core it targets.
+
+## Unreleased (React Router)
+
+**`@live-tabs/react-router`, a React Router adapter.** This replaces the
+"planned" row. It supports React Router 7 and 8 in data, declarative and
+framework mode. Routes opt in with `handle: { keepAlive: true }`, and
+`<KeepAliveOutlet />` replaces `<Outlet />`. Kept pages get React Router's
+location and data contexts re-provided with their own values, so the standard
+`useLocation` / `useParams` / `useLoaderData` stay correct while a page is
+hidden. No other package's code changed: `@live-tabs/core`,
+`@live-tabs/tanstack-router` and `@live-tabs/next` only gained doc lines and
+the LICENSE attribution entry.
 
 ## 0.2.2
 

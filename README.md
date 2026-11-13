@@ -17,7 +17,7 @@ This is the monorepo. Pick the package that matches your router.
 | [`@live-tabs/next`](./packages/next) | ✅ | You use the **Next.js App Router**. Client-side, never touches the Next router. |
 | [`@live-tabs/tanstack-router`](./packages/tanstack-router) | ✅ | You use **TanStack Router**. Batteries included — re-exports core plus the keep-alive engine. |
 | [`@live-tabs/core`](./packages/core) | ✅ | You're writing a new router adapter, or want only the headless primitives. No router dependency. |
-| `@live-tabs/react-router` | 🚧 planned | React Router adapter. |
+| [`@live-tabs/react-router`](./packages/react-router) | ✅ | You use **React Router** (7+, data, declarative or framework mode). Hidden pages keep reading their own URL and loader data. |
 
 ## Install and run
 
@@ -52,6 +52,34 @@ function RootLayout() {
 `<KeepAliveOutlet />` replaces TanStack's `<Outlet />` in the layout whose
 children should stay alive. Full guide:
 [packages/tanstack-router/README.md](./packages/tanstack-router/README.md).
+
+### `@live-tabs/react-router` — React Router
+
+```bash
+npm i @live-tabs/react-router react-router zustand
+```
+
+```tsx
+import { WorkspaceProvider, WorkspaceTabBar, KeepAliveOutlet } from "@live-tabs/react-router"
+import "@live-tabs/react-router/styles.css" // optional default theme
+
+// Opt a route into keep-alive:
+//   { path: "leads/:id", handle: { keepAlive: true }, element: <LeadDetail /> }
+
+function AppLayout() {
+  return (
+    <WorkspaceProvider options={{ pinnedPath: "/" }} persist>
+      <WorkspaceTabBar />
+      <KeepAliveOutlet />
+    </WorkspaceProvider>
+  )
+}
+```
+
+`<KeepAliveOutlet />` replaces `<Outlet />`. Inside a kept page, React Router's
+own `useLocation`, `useParams` and `useLoaderData` keep answering for that page
+even while it's hidden. Full guide:
+[packages/react-router/README.md](./packages/react-router/README.md).
 
 ### `@live-tabs/next` — Next.js App Router
 
@@ -115,7 +143,7 @@ the location, freezing it per subtree, and resolving which component to render.
 ```
 @live-tabs/core  ◄── @live-tabs/tanstack-router
                  ◄── @live-tabs/next
-                 ◄── @live-tabs/react-router      (planned)
+                 ◄── @live-tabs/react-router
 ```
 
 Adding a router is one new package and no changes to `@live-tabs/core`.
@@ -124,15 +152,15 @@ Adding a router is one new package and no changes to `@live-tabs/core`.
 
 ```bash
 npm install          # installs all workspaces
-npm run build        # core → tanstack-router → next, in order
+npm run build        # core → tanstack-router → next → react-router, in order
 npm run typecheck    # tsc across all packages
 npm test             # Vitest, all packages
 npm run lint:pkg     # publint — validates publish health of every package
 ```
 
 Build before testing at least once: the adapter packages resolve
-`@live-tabs/core` from its built `dist`, and `@live-tabs/tanstack-router` is
-additionally tested through its **built artifact**, to catch packaging bugs
+`@live-tabs/core` from its built `dist`, and `@live-tabs/tanstack-router` and
+`@live-tabs/react-router` are additionally tested through their **built artifact**, to catch packaging bugs
 source-level tests cannot see.
 
 Versioning is via [changesets](./.changeset); all packages are **fixed** to one
@@ -156,5 +184,5 @@ by hemengke1997 (MIT). Its copyright and permission notice are reproduced in
 ## License
 
 MIT — see [LICENSE](./LICENSE). All runtime peers (`react`, `react-dom`,
-`zustand`, `next`, `@tanstack/react-router`) are MIT; these packages bundle no
+`zustand`, `next`, `@tanstack/react-router`, `react-router`) are MIT; these packages bundle no
 third-party runtime code.

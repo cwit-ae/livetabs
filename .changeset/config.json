@@ -6,7 +6,8 @@
     [
       "@live-tabs/core",
       "@live-tabs/tanstack-router",
-      "@live-tabs/next"
+      "@live-tabs/next",
+      "@live-tabs/react-router"
     ]
   ],
   "linked": [],

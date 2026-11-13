@@ -1,13 +1,14 @@
 import { describe, it, expect, beforeEach } from "vitest"
 import { render, screen, act } from "@testing-library/react"
 import { fireEvent } from "@testing-library/dom"
-import { useEffect, useState } from "react"
+import { useEffect, useLayoutEffect, useState } from "react"
 import {
   RouterProvider,
   createMemoryHistory,
   createRootRoute,
   createRoute,
   createRouter,
+  useRouterState,
 } from "@tanstack/react-router"
 
 import { createTabRegistry, WorkspaceTabBar } from "@live-tabs/core"
@@ -15,7 +16,7 @@ import { createTabRegistry, WorkspaceTabBar } from "@live-tabs/core"
 import { WorkspaceProvider } from "../provider"
 import { KeepAliveOutlet } from "./keep-alive-outlet"
 import { useFrozenLocation } from "./frozen-location"
-import { useActiveEffect } from "./hooks"
+import { useActiveEffect, useKeepAlive } from "./hooks"
 
 /**
  * Runtime coverage for the keep-alive engine as an app actually uses it:
@@ -52,6 +53,39 @@ function LeadDetail() {
   )
 }
 
+/**
+ * Inspects the DOM after every commit that changes the route, logging a frame
+ * where the router has settled on a URL but its page is not on screen.
+ */
+const blankFrames: string[] = []
+const pageTestIds: Record<string, string> = {
+  "/": "home",
+  "/settings": "settings",
+}
+function FrameProbe() {
+  const snapshot = useRouterState({
+    select: (s) =>
+      `${s.location.pathname}|${s.isLoading}|${s.matches.map((m) => m.id).join(",")}`,
+  })
+  useLayoutEffect(() => {
+    const [pathname, isLoading] = snapshot.split("|") as [string, string]
+    if (isLoading === "true") return
+    const lead = /^\/leads\/(.+)$/.exec(pathname)?.[1]
+    const testId = lead ? `lead-${lead}` : pageTestIds[pathname]
+    if (testId && !document.querySelector(`[data-testid="${testId}"]`)) {
+      blankFrames.push(pathname)
+    }
+  }, [snapshot])
+  return null
+}
+
+/** Exposes `useKeepAlive()` to the test body. */
+let keepAliveApi: ReturnType<typeof useKeepAlive> | null = null
+function KeepAliveHandle() {
+  keepAliveApi = useKeepAlive()
+  return null
+}
+
 const registry = createTabRegistry({
   staticRoutes: { "/": { title: "Home" } },
   dynamicPatterns: [{ match: /^\/leads\/[^/]+$/, noun: "Lead" }],
@@ -62,7 +96,10 @@ function makeRouter(initial = "/") {
     component: () => (
       <WorkspaceProvider options={{ pinnedPath: "/" }} registry={registry}>
         <WorkspaceTabBar />
-        <KeepAliveOutlet />
+        <KeepAliveOutlet>
+          <FrameProbe />
+          <KeepAliveHandle />
+        </KeepAliveOutlet>
       </WorkspaceProvider>
     ),
   })
@@ -115,6 +152,8 @@ const tabTitles = () =>
 beforeEach(() => {
   for (const k of Object.keys(mounts)) delete mounts[k]
   activeLog.length = 0
+  blankFrames.length = 0
+  keepAliveApi = null
 })
 
 describe("TanStack keep-alive engine", () => {
@@ -214,5 +253,98 @@ describe("TanStack keep-alive engine", () => {
 
     expect(keptWrapper("/leads/1")).toBeNull()
     expect(tabTitles()).toEqual(["Home", "Lead #2"])
+  })
+
+  it("renders the current page from the first frame, with no blank frame", async () => {
+    const router = makeRouter()
+    render(<RouterProvider router={router} />)
+    await screen.findByTestId("home")
+
+    // Navigate without flushing the registration: the page must already be
+    // on screen when the navigation commits.
+    await act(async () => {
+      await router.navigate({ to: "/leads/1" })
+    })
+    expect(screen.getByTestId("lead-1")).toBeInTheDocument()
+
+    await act(async () => {
+      await router.navigate({ to: "/settings" })
+    })
+    expect(screen.getByTestId("settings")).toBeInTheDocument()
+
+    await goto(router, "/leads/2")
+    await goto(router, "/")
+
+    expect(blankFrames).toEqual([])
+  })
+
+  it("mounts a kept page exactly once, from its first visit on", async () => {
+    const router = makeRouter()
+    render(<RouterProvider router={router} />)
+    await screen.findByTestId("home")
+
+    await goto(router, "/leads/1")
+    expect(mounts["1"]).toBe(1)
+
+    await goto(router, "/settings")
+    await goto(router, "/leads/2")
+    await goto(router, "/leads/1")
+    await goto(router, "/")
+    await goto(router, "/leads/1")
+
+    // Every mount is a kept, frozen instance — never a stray `<Outlet />`
+    // copy of a kept page (which would mount as "?").
+    expect(mounts).toEqual({ "1": 1, "2": 1 })
+  })
+
+  it("closing the active tab tears its page down", async () => {
+    const router = makeRouter()
+    render(<RouterProvider router={router} />)
+    await screen.findByTestId("home")
+
+    await goto(router, "/leads/1")
+    await goto(router, "/leads/2")
+
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText("Close Lead #2"))
+    })
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    expect(router.state.location.pathname).not.toBe("/leads/2")
+    expect(keptWrapper("/leads/2")).toBeNull()
+    expect(tabTitles()).toEqual(["Home", "Lead #1"])
+  })
+
+  it("does not resurrect a page destroyed while still on screen", async () => {
+    const router = makeRouter()
+    render(<RouterProvider router={router} />)
+    await screen.findByTestId("home")
+
+    await goto(router, "/leads/1")
+    await goto(router, "/leads/2")
+
+    // Destroy first, then re-render with fresh matches before the URL moves —
+    // the window that closing the active tab opens.
+    await act(async () => {
+      keepAliveApi!.destroy("/leads/2")
+    })
+    await act(async () => {
+      await router.invalidate()
+    })
+    // The page stays on screen until the user actually leaves it.
+    expect(screen.getByTestId("lead-2")).toBeInTheDocument()
+
+    await goto(router, "/leads/1")
+    expect(keptWrapper("/leads/2")).toBeNull()
+
+    // A fresh visit brings it back, newly mounted.
+    await goto(router, "/leads/2")
+    expect(keptWrapper("/leads/2")).toHaveAttribute(
+      "data-keepalive-mode",
+      "visible",
+    )
+    expect(mounts["2"]).toBe(2)
   })
 })

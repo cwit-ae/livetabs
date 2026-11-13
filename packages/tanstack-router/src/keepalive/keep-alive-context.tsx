@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useCallback, useContext, useMemo, useState } from "react"
 import type { ReactNode } from "react"
 import type { StaticDataRouteOption } from "@tanstack/react-router"
 
@@ -42,24 +42,29 @@ export function KeepAliveProvider({
   const [aliveRoutes, _setAliveRoutes] =
     useState<AliveRoutes>(defaultAliveRoutes)
 
-  const setAliveRoutes = (key: string, value: AliveRouteData) => {
+  // Stable callbacks and a memoised value: consumers re-render only when the
+  // map itself changes.
+  const setAliveRoutes = useCallback((key: string, value: AliveRouteData) => {
     _setAliveRoutes((state) => ({ ...state, [key]: value }))
-  }
+  }, [])
 
-  const deleteAliveRoutes = (keys: string[]) => {
+  const deleteAliveRoutes = useCallback((keys: string[]) => {
     _setAliveRoutes((state) => {
+      // Nothing to remove → same state object → no re-render.
+      if (!keys.some((key) => key in state)) return state
       const next = { ...state }
       for (const key of keys) delete next[key]
       return next
     })
-  }
+  }, [])
+
+  const value = useMemo(
+    () => ({ aliveRoutes, setAliveRoutes, deleteAliveRoutes }),
+    [aliveRoutes, setAliveRoutes, deleteAliveRoutes],
+  )
 
   return (
-    <KeepAliveContext.Provider
-      value={{ aliveRoutes, setAliveRoutes, deleteAliveRoutes }}
-    >
-      {children}
-    </KeepAliveContext.Provider>
+    <KeepAliveContext.Provider value={value}>{children}</KeepAliveContext.Provider>
   )
 }
 
