@@ -40,12 +40,14 @@ copyright notice and permission notice are reproduced below, as MIT requires.
                                   route renderer
      @live-tabs/next              the keep-alive context/provider, adapted in
                                   turn from the TanStack one
+     @live-tabs/react-router      the keep-alive context/provider, adapted in
+                                  turn from the TanStack one
      live-tabs                    all of the above, inlined at build time
 
    What differs from upstream: the off-screen strategy (CSS visibility rather
    than the Suspense throw-promise pattern), the direct-component render path
    used instead of a frozen `<Outlet />`, the router-agnostic split across
-   packages, and the Next.js adapter. See the individual file headers.
+   packages, and the Next.js and React Router adapters. See the individual file headers.
 
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
@@ -78,3 +80,4 @@ peer dependency, installed and licensed by the consuming application:
   next                    MIT   (peer of @live-tabs/next only)
   @tanstack/react-router  MIT   (peer of @live-tabs/tanstack-router and
                                  live-tabs only)
+  react-router            MIT   (peer of @live-tabs/react-router only)

@@ -37,6 +37,7 @@ renderer and no navigation:
 | --- | --- |
 | Next.js App Router | [`@live-tabs/next`](https://github.com/cwit-ae/livetabs/tree/main/packages/next) |
 | TanStack Router | [`@live-tabs/tanstack-router`](https://www.npmjs.com/package/@live-tabs/tanstack-router) |
+| React Router | [`@live-tabs/react-router`](https://github.com/cwit-ae/livetabs/tree/main/packages/react-router) |
 
 Each re-exports everything here, so you never install both. Reach for
 `@live-tabs/core` directly only when building a new router adapter, or when you
@@ -116,8 +117,8 @@ export const { useActiveChanged, useActiveEffect } = createActiveHooks(useKeptPa
 `display` between `contents` and `none`. `CachedRoute` renders a captured
 component directly rather than through a router outlet.
 
-`@live-tabs/tanstack-router` and `@live-tabs/next` are each ~150 lines on top
-of this — read either as a worked example.
+`@live-tabs/tanstack-router`, `@live-tabs/next` and `@live-tabs/react-router`
+are each a few hundred lines on top of this — read any of them as a worked example.
 
 ## Changelog
 

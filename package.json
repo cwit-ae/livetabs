@@ -2,15 +2,16 @@
   "name": "live-tabs",
   "private": true,
   "version": "0.1.0",
-  "description": "Browser-style workspace tabs with kept-alive pages for TanStack Router. Switch pages without losing scroll, form input, or query state.",
+  "description": "Browser-style workspace tabs with kept-alive pages for TanStack Router, React Router and Next.js. Switch pages without losing scroll, form input, or query state.",
   "workspaces": [
     "packages/core",
     "packages/tanstack-router",
-    "packages/next"
+    "packages/next",
+    "packages/react-router"
   ],
   "scripts": {
-    "build": "npm run build -w @live-tabs/core && npm run build -w @live-tabs/tanstack-router && npm run build -w @live-tabs/next",
-    "typecheck": "npm run build -w @live-tabs/core && npm run build -w @live-tabs/tanstack-router && npm run build -w @live-tabs/next && npm run typecheck --workspaces --if-present",
+    "build": "npm run build -w @live-tabs/core && npm run build -w @live-tabs/tanstack-router && npm run build -w @live-tabs/next && npm run build -w @live-tabs/react-router",
+    "typecheck": "npm run build -w @live-tabs/core && npm run build -w @live-tabs/tanstack-router && npm run build -w @live-tabs/next && npm run build -w @live-tabs/react-router && npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint:pkg": "npm run build && npm run lint:pkg --workspaces --if-present",
@@ -34,6 +35,7 @@
     "publint": "^0.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router": "^8.5.1",
     "rimraf": "^6.0.1",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",
