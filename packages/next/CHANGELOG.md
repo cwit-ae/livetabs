@@ -1,5 +1,11 @@
 # @live-tabs/next
 
+## 0.3.0
+
+### Patch Changes
+
+- @live-tabs/core@0.3.0
+
 ## 0.2.2
 
 ### Added

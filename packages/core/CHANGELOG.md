@@ -1,5 +1,10 @@
 # @live-tabs/core
 
+## 0.3.0
+
+No code changes. The version moves with the fixed group; only the README and
+the LICENSE attribution notice were updated.
+
 ## 0.2.2
 
 ### Added

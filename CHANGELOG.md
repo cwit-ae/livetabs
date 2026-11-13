@@ -10,7 +10,14 @@ Per-package changelogs live alongside each package:
 All packages are in one **fixed version group**, so they release together and
 an adapter never drifts from the core it targets.
 
-## Unreleased (React Router)
+## 0.3.0
+
+**Keep-alive fixes in `@live-tabs/tanstack-router`.** A kept page now renders
+from the first frame instead of after a deferred registration, and mounts
+exactly once. Closing the active tab frees its page even if the router
+re-renders before the URL changes. `useKeepAlive()` and the keep-alive context
+are memoised, so they no longer re-render on every tab switch. The public API
+is unchanged.
 
 **`@live-tabs/react-router`, a React Router adapter.** This replaces the
 "planned" row. It supports React Router 7 and 8 in data, declarative and
