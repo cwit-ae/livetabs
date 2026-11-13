@@ -1,6 +1,6 @@
 {
   "name": "@live-tabs/react-router",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "React Router adapter for live-tabs: workspace tabs whose pages stay alive across switches, with useLocation/useParams/useLoaderData frozen per kept page.",
   "keywords": [
     "react-router",
@@ -57,7 +57,7 @@
     "lint:pkg": "publint --strict"
   },
   "dependencies": {
-    "@live-tabs/core": "0.2.2"
+    "@live-tabs/core": "0.3.0"
   },
   "peerDependencies": {
     "react": ">=18",
